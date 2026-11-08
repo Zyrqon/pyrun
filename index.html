@@ -146,10 +146,13 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/python-hint.min.js"></script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script type="importmap">
+{"imports":{"codemirror":"data:text/javascript,export default window.CodeMirror;"}}
+</script>
 <script type="module">
-import * as Y from 'https://cdn.jsdelivr.net/npm/yjs@13.6.18/+esm';
-import { WebsocketProvider } from 'https://cdn.jsdelivr.net/npm/y-websocket@1.5.4/+esm';
-import { CodemirrorBinding } from 'https://cdn.jsdelivr.net/npm/y-codemirror@2.0.2/+esm';
+import * as Y from 'https://esm.sh/yjs@13.6.18';
+import { WebsocketProvider } from 'https://esm.sh/y-websocket@1.5.4?deps=yjs@13.6.18';
+import { CodemirrorBinding } from 'https://esm.sh/y-codemirror@2.0.2?deps=yjs@13.6.18&external=codemirror';
 
 const EXAMPLES = {
  "Привет, мир": 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}!")',
