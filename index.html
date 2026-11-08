@@ -39,7 +39,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(700px 
 .pane .phead .spacer{flex:1}
 .chip{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:3px 10px;background:rgba(255,255,255,.03);cursor:pointer;white-space:nowrap}
 .chip:hover{color:var(--text)}
-select.chip{appearance:auto;color:var(--text);font-size:12px;padding:3px 8px}
+select.chip{appearance:auto;color:var(--text);font-size:12px;padding:3px 8px;width:140px;flex:none}
 #editorwrap{flex:1;min-height:0;position:relative}
 .CodeMirror{height:100%;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:transparent!important;color:#eef2f7}
 .cm-s-material-darker .CodeMirror-gutters{background:rgba(255,255,255,.02);border-right:1px solid var(--line)}
@@ -183,7 +183,7 @@ async function run() {
     const code = editor.getValue();
     await py.loadPackagesFromImports(code);
     const r = await py.runPythonAsync(code);
-    if (r !== undefined) println(py.globals.get('repr')(r).toString(), 'ok');
+    if (r !== undefined) println(String(r), 'ok');
     println(`── готово за ${Math.round(performance.now() - t0)} мс ──`, 'dim');
   } catch (e) {
     println(String(e).split('\n').filter(l => l).join('\n'), 'err');
