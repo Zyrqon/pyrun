@@ -4,14 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0d10">
-<title>PyRun — онлайн Python</title>
-<meta name="description" content="Красивый онлайн-компилятор Python: запуск кода прямо в браузере, без установки.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+<title>PyRun — онлайн компилятор Python в браузере</title>
+<meta name="description" content="Бесплатный онлайн-компилятор Python: пишите и запускайте код прямо в браузере без установки. Подсветка синтаксиса, подсказки, графики matplotlib, NumPy и pandas.">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="PyRun — онлайн компилятор Python">
+<meta property="og:description" content="Запуск Python прямо в браузере: подсветка, подсказки, графики matplotlib, NumPy и pandas. Без регистрации и установки.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zyrqon.github.io/pyrun/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0d10'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='13' fill='none' stroke='%236ea8ff' stroke-opacity='.55'/%3E%3Ctext x='32' y='43' font-family='Arial,Helvetica,sans-serif' font-size='27' font-weight='bold' fill='%236ea8ff' text-anchor='middle'%3EPy%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"PyRun","url":"https://zyrqon.github.io/pyrun/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"Онлайн-компилятор Python: запуск кода прямо в браузере, подсветка синтаксиса, matplotlib, NumPy и pandas."}
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 <style>
 :root{--bg:#0b0d10;--card:rgba(22,26,32,.85);--card2:rgba(34,40,49,.9);--line:rgba(255,255,255,.08);--text:#eef2f7;--dim:#8d97a5;--accent:#6ea8ff;--green:#5bd08d;--red:#ff7a7a}
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
 html,body{height:100%}
 body{background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;inset:0;background:radial-gradient(700px 380px at 20% 0%,rgba(110,168,255,.10),transparent 70%),radial-gradient(500px 320px at 85% 90%,rgba(140,110,255,.08),transparent 70%);pointer-events:none}
@@ -19,86 +28,108 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(700px 
 #app{position:fixed;inset:0;display:flex;flex-direction:column}
 #top{display:flex;align-items:center;gap:10px;padding:12px 16px;flex:none;flex-wrap:wrap}
 #top .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px}
-#top .logo .badge{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3);font-size:17px}
+#top .logo .badge{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;font-size:14px;font-weight:800;color:var(--accent);background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3)}
 #top .sub{color:var(--dim);font-size:12.5px}
 #top .spacer{flex:1}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s,filter .12s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s,filter .12s;white-space:nowrap;min-height:40px}
 .btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line)}
 .btn:hover{filter:brightness(1.1)}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:default;filter:none}
 .btn svg{width:16px;height:16px}
-#status{font-size:12.5px;color:var(--dim);display:flex;align-items:center;gap:7px;white-space:nowrap}
-#status .dot{width:8px;height:8px;border-radius:99px;background:#c9a44d;box-shadow:0 0 10px rgba(201,164,77,.8)}
+#status{font-size:12.5px;color:var(--dim);display:flex;align-items:center;gap:7px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#status .dot{width:8px;height:8px;border-radius:99px;background:#c9a44d;box-shadow:0 0 10px rgba(201,164,77,.8);flex:none}
 #status.on .dot{background:var(--green);box-shadow:0 0 10px rgba(91,208,141,.8)}
 
 #main{flex:1;display:flex;min-height:0;padding:0 16px 16px;gap:14px}
 .pane{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;backdrop-filter:blur(14px);box-shadow:0 16px 44px rgba(0,0,0,.35)}
-.pane .phead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex:none}
-.pane .phead .t{font-size:13px;font-weight:600;color:var(--dim);letter-spacing:.3px}
+.pane .phead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex:none;overflow-x:auto;scrollbar-width:none}
+.pane .phead::-webkit-scrollbar{display:none}
+.pane .phead .t{font-size:13px;font-weight:600;color:var(--dim);letter-spacing:.3px;flex:none}
 .pane .phead .spacer{flex:1}
-.chip{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:3px 10px;background:rgba(255,255,255,.03);cursor:pointer;white-space:nowrap}
+.chip{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:4px 11px;background:rgba(255,255,255,.03);cursor:pointer;white-space:nowrap;flex:none;min-height:26px}
 .chip:hover{color:var(--text)}
-select.chip{appearance:auto;color:var(--text);font-size:12px;padding:3px 8px;width:140px;flex:none}
+select.chip{appearance:auto;-webkit-appearance:none;color:var(--text);font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 #editorwrap{flex:1;min-height:0;position:relative}
 .CodeMirror{height:100%;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:transparent!important;color:#eef2f7}
 .cm-s-material-darker .CodeMirror-gutters{background:rgba(255,255,255,.02);border-right:1px solid var(--line)}
 .cm-s-material-darker .CodeMirror-cursor{border-left:2px solid var(--accent)}
+.CodeMirror-hints{z-index:60;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#161a20;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.CodeMirror-hint{color:#eef2f7;padding:4px 10px}
+li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 
-#outwrap{flex:1;min-height:0;overflow:auto;padding:12px 14px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+#outwrap{flex:1;min-height:0;overflow:auto;padding:12px 14px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text}
 #outwrap .err{color:var(--red)}
 #outwrap .dim{color:var(--dim)}
 #outwrap .ok{color:var(--green)}
+#outwrap img.plot{max-width:100%;background:#fff;border-radius:10px;margin:8px 0;display:block;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 #outwrap:empty::before{content:"Вывод появится здесь";color:var(--dim);font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13.5px}
 
 #load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);z-index:50;transition:opacity .4s;padding:24px;text-align:center}
 #load.hidden{opacity:0;pointer-events:none}
-#load .py{font-size:44px;animation:bob 1.6s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#load .badge{width:72px;height:72px;display:grid;place-items:center;border-radius:20px;font-size:26px;font-weight:800;color:var(--accent);background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 #load h1{font-size:21px;font-weight:700}
 #load p{color:var(--dim);font-size:14px;max-width:380px}
 #load .bar{width:min(320px,80vw);height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
 #load .bar i{display:block;height:100%;width:8%;border-radius:99px;background:linear-gradient(90deg,#6ea8ff,#8c6eff);transition:width .5s}
 
 @media(max-width:760px){
- #main{flex-direction:column;padding:0 10px 10px;gap:10px}
+ #main{flex-direction:column;padding:0 8px calc(8px + env(safe-area-inset-bottom));gap:8px}
+ #editPane{flex:1.25}
+ #outPane{flex:1}
  .pane{border-radius:14px}
- #top{padding:10px 12px}
- .sub{display:none}
- #outPane{flex:0 0 40%}
+ #top{padding:8px 10px;gap:8px}
+ #top .sub{display:none}
+ .btn{padding:9px 14px;font-size:14px}
+ .chip{padding:6px 12px;font-size:12px}
+ select.chip{width:118px}
+ #status{font-size:11.5px;order:9;width:100%}
+ .CodeMirror{font-size:13px}
+ #outwrap{font-size:12.5px}
 }
 </style>
 </head>
 <body>
 <div id="app">
  <div id="top">
-  <div class="logo"><span class="badge">🐍</span>PyRun<span class="sub">онлайн Python</span></div>
+  <div class="logo"><span class="badge">Py</span>PyRun<span class="sub">онлайн Python</span></div>
   <div class="spacer"></div>
-  <select id="examples" class="chip"><option value="">Примеры…</option></select>
-  <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">Ссылка</button>
-  <div id="status"><span class="dot"></span><span id="statusText">загрузка…</span></div>
+  <select id="examples" class="chip"><option value="">Примеры</option></select>
+  <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Ссылка
+  </button>
+  <div id="status"><span class="dot"></span><span id="statusText">загрузка</span></div>
   <button class="btn" id="runBtn" disabled>
    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Запустить
   </button>
  </div>
  <div id="main">
   <div class="pane" id="editPane">
-   <div class="phead"><span class="t">КОД</span><div class="spacer"></div><span class="chip" id="clearBtn">очистить</span></div>
+   <div class="phead"><span class="t">КОД</span><div class="spacer"></div>
+    <span class="chip" id="openBtn">открыть</span>
+    <span class="chip" id="saveBtn">скачать</span>
+    <span class="chip" id="clearBtn">очистить</span>
+    <input type="file" id="fileInput" accept=".py,.txt" hidden>
+   </div>
    <div id="editorwrap"><textarea id="code"></textarea></div>
   </div>
   <div class="pane" id="outPane">
-   <div class="phead"><span class="t">ВЫВОД</span><div class="spacer"></div><span class="chip" id="clearOutBtn">очистить вывод</span></div>
+   <div class="phead"><span class="t">ВЫВОД</span><div class="spacer"></div>
+    <span class="chip" id="copyOutBtn">копировать</span>
+    <span class="chip" id="clearOutBtn">очистить вывод</span>
+   </div>
    <div id="outwrap"></div>
   </div>
  </div>
 </div>
 
 <div id="load">
- <div class="py">🐍</div>
+ <div class="badge">Py</div>
  <h1>PyRun</h1>
- <p>Python запускается прямо в браузере. Первый запуск скачает движок (~10 МБ), дальше — мгновенно.</p>
+ <p>Python запускается прямо в браузере. Первый запуск скачает движок, дальше — мгновенно.</p>
  <div class="bar"><i id="bar"></i></div>
- <p id="loadpct" style="font-size:12.5px">загружаю…</p>
+ <p id="loadpct" style="font-size:12.5px">загружаю</p>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
@@ -106,16 +137,19 @@ select.chip{appearance:auto;color:var(--text);font-size:12px;padding:3px 8px;wid
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/python-hint.min.js"></script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 <script>
 const EXAMPLES = {
- "Привет, мир": 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}! 🐍")',
+ "Привет, мир": 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}!")',
  "Числа Фибоначчи": "def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        print(a, end=' ')\n        a, b = b, a + b\n    print()\n\nfib(15)",
  "Списки и срезы": "nums = [8, 3, 15, 1, 42, 7]\nprint(\"было:\", nums)\nnums.sort()\nprint(\"стало:\", nums)\nprint(\"топ-3:\", nums[-3:])",
  "Счётчик букв": "from collections import Counter\ns = \"онлайн компилятор пайтон\"\nc = Counter(s.replace(\" \", \"\"))\nfor ch, n in c.most_common(5):\n    print(f\"{ch!r}: {n}\")",
  "Классы": "class Drone:\n    def __init__(self, model, battery=100):\n        self.model = model\n        self.battery = battery\n    def fly(self, minutes):\n        self.battery = max(0, self.battery - minutes * 2)\n        return f\"{self.model} летит {minutes} мин, заряд {self.battery}%\"\n\nd = Drone(\"Cetus Pro\")\nprint(d.fly(20))",
- "Математика": "import math, random\nrolls = [random.randint(1, 6) for _ in range(1000)]\nprint(\"среднее за 1000 бросков кубика:\", round(sum(rolls) / len(rolls), 3))\nprint(\"√2 =\", math.sqrt(2))\nprint(\"π =\", round(math.pi, 5))",
- "NumPy": "import numpy as np\na = np.array([[1, 2, 3], [4, 5, 6]])\nprint(a * 2)\nprint(\"строк:\", a.shape[0], \"столбцов:\", a.shape[1])\nprint(\"сумма:\", a.sum())"
+ "Математика": "import math, random\nrolls = [random.randint(1, 6) for _ in range(1000)]\nprint(\"среднее за 1000 бросков кубика:\", round(sum(rolls) / len(rolls), 3))\nprint(\"sqrt(2) =\", math.sqrt(2))\nprint(\"pi =\", round(math.pi, 5))",
+ "График": "import numpy as np\nimport matplotlib.pyplot as plt\n\nx = np.linspace(0, 2 * 3.14159, 200)\nplt.plot(x, np.sin(x), label=\"sin(x)\")\nplt.plot(x, np.cos(x), label=\"cos(x)\")\nplt.legend()\nplt.title(\"Синус и косинус\")\nplt.grid(True)\nplt.show()",
+ "Pandas": "import pandas as pd\n\ndata = {\"имя\": [\"Аня\", \"Боря\", \"Вика\"], \"балл\": [91, 78, 95]}\ndf = pd.DataFrame(data)\nprint(df)\nprint(\"средний балл:\", df[\"балл\"].mean())"
 };
 
 const sel = document.getElementById('examples');
@@ -126,20 +160,25 @@ for (const k of Object.keys(EXAMPLES)) {
 const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
   mode: 'python', theme: 'material-darker', lineNumbers: true, indentUnit: 4,
   matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
-  extraKeys: {'Ctrl-Enter': run, 'Cmd-Enter': run, 'Shift-Enter': run}
+  extraKeys: {'Ctrl-Enter': run, 'Cmd-Enter': run, 'Shift-Enter': run, 'Ctrl-Space': 'autocomplete'}
 });
 
 try {
   const h = location.hash.slice(1);
   if (h) editor.setValue(decodeURIComponent(escape(atob(h.replace(/-/g, '+').replace(/_/g, '/')))));
 } catch(e) {}
-if (!editor.getValue()) editor.setValue(`# Пиши код и жми Запустить (Ctrl+Enter)\n# Работают input(), NumPy, pandas и многое другое\n\nimport sys\nprint("Python", sys.version.split()[0])\nprint("Считаем от 1 до 5:", list(range(1, 6)))\n`);
+if (!editor.getValue()) {
+  const saved = localStorage.getItem('pyrun_code');
+  if (saved) editor.setValue(saved);
+  else editor.setValue('# Пиши код и жми Запустить (Ctrl+Enter)\n# Работают input(), NumPy, pandas и matplotlib\n\nimport sys\nprint("Python", sys.version.split()[0])\nprint("Считаем от 1 до 5:", list(range(1, 6)))\n');
+}
+editor.on('change', () => { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} });
 
 const out = document.getElementById('outwrap');
 const bar = document.getElementById('bar'), loadpct = document.getElementById('loadpct');
 const status = document.getElementById('status'), statusText = document.getElementById('statusText');
 const runBtn = document.getElementById('runBtn');
-let py = null, pyVersion = '', running = false;
+let py = null, pyVersion = '', figsFn = null, running = false;
 
 function println(text, cls) {
   const d = document.createElement('div');
@@ -148,6 +187,7 @@ function println(text, cls) {
   out.appendChild(d);
   out.scrollTop = out.scrollHeight;
 }
+function scrollOut() { out.scrollTop = out.scrollHeight; }
 
 let pv = 0;
 const pTimer = setInterval(() => { pv = Math.min(92, pv + 2); bar.style.width = pv + '%'; loadpct.textContent = pv + '%'; }, 350);
@@ -160,6 +200,20 @@ async function boot() {
       stderr: (s) => println(s, 'err')
     });
     py.setStdin({ stdin: () => (prompt('input() ждёт ввода:') ?? '') + '\n' });
+    py.runPython(
+'import io, base64, sys\n' +
+'def _pyrun_figs():\n' +
+"    if 'matplotlib.pyplot' not in sys.modules:\n" +
+'        return []\n' +
+'    import matplotlib.pyplot as plt\n' +
+'    figs = []\n' +
+'    for n in plt.get_fignums():\n' +
+'        buf = io.BytesIO()\n' +
+"        plt.figure(n).savefig(buf, format='png', dpi=110, bbox_inches='tight')\n" +
+'        figs.append(base64.b64encode(buf.getvalue()).decode())\n' +
+"    plt.close('all')\n" +
+'    return figs\n');
+    figsFn = py.globals.get('_pyrun_figs');
     clearInterval(pTimer);
     bar.style.width = '100%'; loadpct.textContent = '100%';
     pyVersion = py.runPython('import sys\nsys.version.split()[0]').toString();
@@ -178,28 +232,77 @@ async function run() {
   running = true;
   runBtn.disabled = true;
   const t0 = performance.now();
-  println('── запуск ──', 'dim');
+  out.innerHTML = '';
+  println('запуск', 'dim');
   try {
     const code = editor.getValue();
-    await py.loadPackagesFromImports(code);
+    statusText.textContent = 'подгружаю пакеты';
+    await py.loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
+    statusText.textContent = 'выполняю';
     const r = await py.runPythonAsync(code);
     if (r !== undefined) println(String(r), 'ok');
-    println(`── готово за ${Math.round(performance.now() - t0)} мс ──`, 'dim');
+    try {
+      const fp = figsFn();
+      const arr = (fp && fp.toJs) ? fp.toJs() : (fp || []);
+      for (const b64 of arr) {
+        const img = document.createElement('img');
+        img.src = 'data:image/png;base64,' + b64;
+        img.className = 'plot';
+        img.alt = 'график matplotlib';
+        out.appendChild(img);
+      }
+    } catch (e2) {}
+    println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
     println(String(e).split('\n').filter(l => l).join('\n'), 'err');
   }
+  scrollOut();
   running = false;
   runBtn.disabled = false;
+  statusText.textContent = 'Python ' + pyVersion + ' готов';
 }
 
 runBtn.onclick = run;
 document.getElementById('clearOutBtn').onclick = () => out.innerHTML = '';
 document.getElementById('clearBtn').onclick = () => { editor.setValue(''); editor.focus(); };
+document.getElementById('copyOutBtn').onclick = () => {
+  navigator.clipboard.writeText(out.innerText).then(() => flash('вывод скопирован'), () => flash('не удалось скопировать'));
+};
 sel.onchange = () => { if (EXAMPLES[sel.value]) { editor.setValue(EXAMPLES[sel.value]); editor.focus(); sel.value = ''; } };
+document.getElementById('openBtn').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { editor.setValue(String(rd.result)); flash('открыт ' + f.name); };
+  rd.readAsText(f);
+  e.target.value = '';
+};
+document.getElementById('saveBtn').onclick = () => {
+  const blob = new Blob([editor.getValue()], { type: 'text/x-python' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'code.py';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+document.getElementById('editorwrap').addEventListener('dragover', (e) => e.preventDefault());
+document.getElementById('editorwrap').addEventListener('drop', (e) => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { editor.setValue(String(rd.result)); flash('открыт ' + f.name); };
+  rd.readAsText(f);
+});
 document.getElementById('shareBtn').onclick = () => {
   const code = btoa(unescape(encodeURIComponent(editor.getValue()))).replace(/\+/g, '-').replace(/\//g, '_');
   const url = location.origin + location.pathname + '#' + code;
-  navigator.clipboard.writeText(url).then(() => flash('ссылка скопирована'), () => { location.hash = code; flash('ссылка в адресной строке'); });
+  if (navigator.share) {
+    navigator.share({ title: 'PyRun', url: url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => flash('ссылка скопирована'), () => { location.hash = code; flash('ссылка в адресной строке'); });
+  }
 };
 function flash(msg) {
   statusText.textContent = msg;
