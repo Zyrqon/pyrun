@@ -328,19 +328,6 @@ const LUA_SHIM = "io.write = function(...) local t = {} for i, v in ipairs({...}
 "print = function(...) local t = {} for i, v in ipairs({...}) do t[i] = tostring(v) end pyrun_out(table.concat(t, '\\t') .. '\\n') end\n" +
 "io.read = function() return pyrun_in() or '' end\n";
 
-const RUBY_SHIM = 'require "js"\n' +
-'def print(*args)\n' +
-'  JS.global[:ruby_out].call(args.map { |a| a.to_s }.join(" "))\n' +
-'  nil\n' +
-'end\n' +
-'def puts(*args)\n' +
-'  print(args.map { |a| a.to_s }.join(" ") + "\\n")\n' +
-'  nil\n' +
-'end\n' +
-'def p(*args)\n' +
-'  print(args.map { |a| a.inspect }.join(" ") + "\\n")\n' +
-'  nil\n' +
-'end\n';
 
 async function ensurePy(l) {
   if (pys[l]) return pys[l];
@@ -407,8 +394,6 @@ async function ensureRuby() {
     try { mod = await WebAssembly.compileStreaming(resp); }
     catch (e10) { mod = await WebAssembly.compile(await resp.arrayBuffer()); }
     rubyVM = (await m.DefaultRubyVM(mod)).vm;
-    window.ruby_out = (s) => lineW('ruby', String(s));
-    rubyVM.eval(RUBY_SHIM);
   } catch (e) {
     clearInterval(tick);
     loadpct.textContent = 'не удалось загрузить: ' + e;
@@ -620,7 +605,10 @@ async function run() {
     } else if (lang === 'ruby') {
       const vm = await ensureRuby();
       statusText.textContent = 'выполняю';
+      const origLog = console.log;
+      console.log = (rs) => lineW('ruby', String(rs));
       try { vm.eval(code); } catch (e7) { println('Ruby: ' + String(e7 && e7.message ? e7.message : e7), 'err'); }
+      finally { console.log = origLog; }
     } else if (lang === 'cpp') {
       const J = await ensureCpp();
       statusText.textContent = 'выполняю';
