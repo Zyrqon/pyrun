@@ -98,6 +98,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
  <div id="top">
   <div class="logo"><span class="badge">Py</span>PyRun<span class="sub">онлайн Python</span></div>
   <div class="spacer"></div>
+  <select id="langSel" class="chip" title="Язык программирования"><option value="python">Python 3</option><option value="javascript">JavaScript</option></select>
   <select id="examples" class="chip"><option value="">Примеры</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7S13.9 16 14.5 19"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.7-.4 4.6 1 5 4.4"/></svg><span>Комната</span>
@@ -116,7 +117,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
     <span class="chip" id="openBtn">открыть</span>
     <span class="chip" id="saveBtn">скачать</span>
     <span class="chip" id="clearBtn">очистить</span>
-    <input type="file" id="fileInput" accept=".py,.txt" hidden>
+    <input type="file" id="fileInput" accept=".py,.js,.txt" hidden>
    </div>
    <div id="editorwrap"><textarea id="code"></textarea></div>
   </div>
@@ -140,6 +141,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
@@ -165,10 +167,27 @@ const EXAMPLES = {
  "Pandas": "import pandas as pd\n\ndata = {\"имя\": [\"Аня\", \"Боря\", \"Вика\"], \"балл\": [91, 78, 95]}\ndf = pd.DataFrame(data)\nprint(df)\nprint(\"средний балл:\", df[\"балл\"].mean())"
 };
 
+const EXAMPLES_JS = {
+ "Привет, мир": 'const name = prompt("Как тебя зовут? ") ?? "друг";\nconsole.log(`Привет, ${name}!`);',
+ "Числа Фибоначчи": "function fib(n){let a=0,b=1;for(let i=0;i<n;i++){console.log(a);[a,b]=[b,a+b];}}\nfib(15);",
+ "Списки и сортировка": "const nums=[8,3,15,1,42,7];\nconsole.log('было:',nums);\nnums.sort((x,y)=>x-y);\nconsole.log('стало:',nums);",
+ "Классы": "class Drone{\n  constructor(model,battery=100){this.model=model;this.battery=battery;}\n  fly(min){this.battery=Math.max(0,this.battery-min*2);return `${this.model} летит ${min} мин, заряд ${this.battery}%`;}\n}\nconst d=new Drone('Cetus Pro');\nconsole.log(d.fly(20));",
+ "Промисы и async": "const wait=(ms)=>new Promise(r=>setTimeout(r,ms));\nconsole.log('старт');\nawait wait(500);\nconsole.log('прошло полсекунды');",
+ "Математика": "const rolls=Array.from({length:1000},()=>1+Math.floor(Math.random()*6));\nconst avg=rolls.reduce((s,x)=>s+x,0)/rolls.length;\nconsole.log('среднее за 1000 бросков кубика:',avg.toFixed(3));\nconsole.log('sqrt(2) =',Math.SQRT2);\nconsole.log('pi =',Math.PI.toFixed(5));"
+};
+
 const sel = document.getElementById('examples');
-for (const k of Object.keys(EXAMPLES)) {
-  const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o);
+let lang = 'python';
+try { lang = localStorage.getItem('pyrun_lang') || 'python'; } catch(e) {}
+const langSel = document.getElementById('langSel');
+function curExamples(){ return lang === 'python' ? EXAMPLES : EXAMPLES_JS; }
+function fillExamples() {
+  sel.innerHTML = '<option value="">Примеры</option>';
+  for (const k of Object.keys(curExamples())) {
+    const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o);
+  }
 }
+fillExamples();
 
 const ydoc = new Y.Doc();
 const ycode = ydoc.getText('code');
@@ -268,12 +287,29 @@ async function boot() {
 function setStatusIdle() {
   const rn = ymeta.get('running');
   if (room && rn && rn.by !== myName) statusText.textContent = rn.by + ' выполняет код';
-  else statusText.textContent = 'Python ' + pyVersion + ' готов';
+  else statusText.textContent = lang === 'python' ? 'Python ' + pyVersion + ' готов' : 'JavaScript готов';
 }
-ymeta.observe(() => setStatusIdle());
+ymeta.observe(() => {
+  setStatusIdle();
+  const l = ymeta.get('lang');
+  if (l && l !== lang) setLang(l, false);
+});
+function setLang(l, sync) {
+  lang = l;
+  langSel.value = l;
+  editor.setOption('mode', l === 'python' ? 'python' : 'javascript');
+  fillExamples();
+  try { localStorage.setItem('pyrun_lang', l); } catch(e) {}
+  runBtn.disabled = (l === 'python' && !py);
+  setStatusIdle();
+  if (room && sync !== false && ymeta.get('lang') !== l) ymeta.set('lang', l);
+}
+langSel.onchange = () => setLang(langSel.value);
+if (lang !== 'python') setLang(lang);
 
 async function run() {
-  if (!py || running) return;
+  if (running) return;
+  if (lang === 'python' && !py) return;
   running = true;
   runBtn.disabled = true;
   const t0 = performance.now();
@@ -283,6 +319,7 @@ async function run() {
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
     const code = ycode.toString();
+    if (lang === 'python') {
     statusText.textContent = 'подгружаю пакеты';
     await py.loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
     statusText.textContent = 'выполняю';
@@ -293,6 +330,25 @@ async function run() {
       const arr = (fp && fp.toJs) ? fp.toJs() : (fp || []);
       for (const b64 of arr) yfigs.push(['data:image/png;base64,' + b64]);
     } catch (e2) {}
+    } else {
+      statusText.textContent = 'выполняю';
+      await new Promise((resolve) => {
+        const orig = {};
+        for (const m of ['log', 'info', 'warn', 'error']) {
+          orig[m] = console[m].bind(console);
+          console[m] = (...a) => {
+            orig[m](...a);
+            println(a.map((x) => { try { return typeof x === 'string' ? x : JSON.stringify(x); } catch (e3) { return String(x); } }).join(' '), m === 'error' ? 'err' : '');
+          };
+        }
+        let f;
+        try { f = new (Object.getPrototypeOf(async function(){}).constructor)(code); }
+        catch (e4) { println(String(e4), 'err'); resolve(); return; }
+        f().then((r) => { if (r !== undefined) println(String(r), 'ok'); resolve(); })
+           .catch((e5) => { println(String(e5 && e5.stack ? e5.stack : e5), 'err'); resolve(); })
+           .finally(() => { for (const m of ['log', 'info', 'warn', 'error']) console[m] = orig[m]; });
+      });
+    }
     println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
     println(String(e).split('\n').filter(l => l).join('\n'), 'err');
@@ -345,7 +401,7 @@ document.getElementById('clearBtn').onclick = () => { ycode.delete(0, ycode.leng
 document.getElementById('copyOutBtn').onclick = () => {
   navigator.clipboard.writeText(out.innerText).then(() => flash('вывод скопирован'), () => flash('не удалось скопировать'));
 };
-sel.onchange = () => { if (EXAMPLES[sel.value]) { ycode.delete(0, ycode.length); ycode.insert(0, EXAMPLES[sel.value]); editor.focus(); sel.value = ''; } };
+sel.onchange = () => { const ex = curExamples(); if (ex[sel.value]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[sel.value]); editor.focus(); sel.value = ''; } };
 document.getElementById('openBtn').onclick = () => document.getElementById('fileInput').click();
 document.getElementById('fileInput').onchange = (e) => {
   const f = e.target.files[0];
