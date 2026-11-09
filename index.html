@@ -93,8 +93,8 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 }
 #app{animation:fadeup .5s ease both}
 @keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-#outwrap>div{animation:outin .22s cubic-bezier(.2,.7,.2,1) both}
-@keyframes outin{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+#outwrap div.fresh{animation:outin .18s ease both}
+@keyframes outin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .btn,.chip{transition:transform .12s ease,background .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease}
 .btn:active{transform:scale(.96)}
 .chip:active{transform:scale(.94)}
@@ -106,6 +106,16 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 .copypop{position:fixed;z-index:99;pointer-events:none;background:#34d399;color:#08131f;font:700 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;padding:7px 11px;border-radius:999px;display:flex;align-items:center;gap:5px;box-shadow:0 6px 18px rgba(0,0,0,.4);white-space:nowrap;animation:popcopy 1.15s cubic-bezier(.2,.7,.2,1) forwards}
 .copypop svg{width:11px;height:11px;flex:none}
 .btn.copied,.chip.copied{box-shadow:0 0 0 2px rgba(52,211,153,.6)!important;border-color:#34d399!important}
+.peersttl{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.peer{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text);padding:5px 2px}
+.peer .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.peer .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.peer .you,.peer .hostb{color:var(--dim);font-size:11.5px;flex:none}
+.peer .hostb{color:#6ea8ff}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
+.seg button{background:transparent;border:0;color:var(--dim);font:600 11.5px -apple-system,BlinkMacSystemFont,sans-serif;padding:4px 9px;cursor:pointer}
+.seg button.on{background:rgba(110,168,255,.22);color:#fff}
+.peernote{color:var(--dim);font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
@@ -117,6 +127,9 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
   <select id="examples" class="chip"><option value="">Примеры</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7S13.9 16 14.5 19"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.7-.4 4.6 1 5 4.4"/></svg><span>Комната</span>
+  </button>
+  <button class="btn ghost" id="peersBtn" title="Участники комнаты" style="display:none">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span>участники</span>
   </button>
   <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Ссылка
@@ -258,6 +271,7 @@ const ycode = ydoc.getText('code');
 const yout = ydoc.getArray('output');
 const yfigs = ydoc.getArray('figs');
 const ymeta = ydoc.getMap('meta');
+const yperm = ydoc.getMap('perm');
 
 const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
   mode: 'python', theme: 'material-darker', lineNumbers: true, indentUnit: 4,
@@ -481,20 +495,28 @@ function runSql(SQL, code) {
 }
 
 
+let outN = 0;
 function renderOut() {
-  out.innerHTML = '';
-  for (const it of yout.toArray()) {
+  const items = yout.toArray();
+  if (items.length < outN) { outN = 0; out.innerHTML = ''; }
+  const firstImg = out.querySelector('img.plot');
+  for (let i = outN; i < items.length; i++) {
     const d = document.createElement('div');
-    if (it.c) d.className = it.c;
-    d.textContent = it.t;
-    out.appendChild(d);
+    d.className = (items[i].c ? items[i].c + ' ' : '') + 'fresh';
+    d.textContent = items[i].t;
+    if (firstImg) out.insertBefore(d, firstImg); else out.appendChild(d);
   }
-  for (const src of yfigs.toArray()) {
-    const img = document.createElement('img');
-    img.src = src;
-    img.className = 'plot';
-    img.alt = 'график matplotlib';
-    out.appendChild(img);
+  outN = items.length;
+  const fl = yfigs.toArray();
+  if (out.querySelectorAll('img.plot').length !== fl.length) {
+    for (const img of out.querySelectorAll('img.plot')) img.remove();
+    for (const src of fl) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'plot';
+      img.alt = 'график matplotlib';
+      out.appendChild(img);
+    }
   }
   out.scrollTop = out.scrollHeight;
 }
@@ -550,9 +572,12 @@ function setStatusIdle() {
   if (room && rn && rn.by !== myName) statusText.textContent = rn.by + ' выполняет код';
   else if (isPy(lang)) statusText.textContent = pyVers[lang] ? 'Python ' + pyVers[lang] + ' готов' : LANGS[lang].label + ' загрузится при запуске';
   else statusText.textContent = LANGS[lang].label + ' готов';
+  if (room && !canWrite()) statusText.textContent += ' \u00b7 только чтение';
 }
 ymeta.observe(() => {
   setStatusIdle();
+  applyPerm();
+  renderPeers();
   const l = ymeta.get('lang');
   if (l && l !== lang) setLang(l, false);
 });
@@ -567,7 +592,7 @@ function setLang(l, sync) {
   setStatusIdle();
   if (room && sync !== false && ymeta.get('lang') !== l) ymeta.set('lang', l);
 }
-langSel.onchange = () => setLang(langSel.value);
+langSel.onchange = () => { if (room && !canWrite()) { flash('язык меняет хост'); return; } setLang(langSel.value); };
 langSel.value = lang;
 if (lang !== 'python') setLang(lang);
 
@@ -656,10 +681,13 @@ async function run() {
 
 function roomLink(id) { return location.origin + location.pathname + '#room=' + id; }
 
-function joinRoom(id) {
+function joinRoom(id, isCreator) {
   if (room) return;
   const provider = new WebsocketProvider('wss://xshell.xyz/pyrun-ws', id, ydoc);
   provider.awareness.setLocalStateField('user', { name: myName, color: 'hsl(' + Math.floor(Math.random() * 360) + ',70%,60%)' });
+  myCID = provider.awareness.clientID;
+  if (isCreator && ymeta.get('hostId') == null) ymeta.set('hostId', myCID);
+  provider.awareness.on('change', () => { renderPeers(); });
   provider.on('status', ({ status: st }) => {
     if (st === 'connected') { status.classList.add('live'); flash('комната подключена'); }
     else { status.classList.remove('live'); }
@@ -670,6 +698,7 @@ function joinRoom(id) {
       if (c) ycode.insert(0, c);
     }
   });
+  myCID = provider.awareness.clientID;
   room = { provider, id };
   roomLabel.textContent = 'комната: ' + id;
   history.replaceState(null, '', '#room=' + id);
@@ -682,7 +711,7 @@ roomBtn.onclick = () => {
   if (room) {
     navigator.clipboard.writeText(roomLink(room.id)).then(() => popCopy(roomBtn), () => flash('комната: ' + room.id));
   } else {
-    joinRoom(genId());
+    joinRoom(genId(), true);
   }
 };
 if (isRoom) {
@@ -690,14 +719,84 @@ if (isRoom) {
   if (id) joinRoom(id);
 }
 
+// ---------- участники и права ----------
+function isHost() {
+  if (!room) return false;
+  const h = ymeta.get('hostId');
+  if (h != null) return h === myCID;
+  const ids = [...room.provider.awareness.getStates().keys()];
+  return ids.length && myCID === Math.min(...ids);
+}
+function canWrite() { return !room || isHost() || yperm.get(String(myCID)) !== 'ro'; }
+function applyPerm() {
+  if (!room) { editor.setOption('readOnly', false); return; }
+  editor.setOption('readOnly', !canWrite());
+}
+function renderPeers() {
+  if (!room) return;
+  peersBtn.style.display = '';
+  const states = room.provider.awareness.getStates();
+  const ids = [...states.keys()];
+  if (!ids.length) { peersLbl.textContent = 'участники: 0'; return; }
+  const list = ids.map((cid) => ({ cid: cid, user: (states.get(cid).user || {}) }));
+  const hostCid = ymeta.get('hostId') != null ? ymeta.get('hostId') : Math.min(...ids);
+  const host = hostCid === myCID;
+  list.sort((a2, b2) => (a2.cid === myCID ? -1 : b2.cid === myCID ? 1 : 0));
+  peersLbl.textContent = 'участники: ' + list.length;
+  peersPop.innerHTML = '';
+  const ttl = document.createElement('div');
+  ttl.className = 'peersttl';
+  ttl.textContent = 'в комнате';
+  peersPop.appendChild(ttl);
+  for (const pr of list) {
+    const row = document.createElement('div');
+    row.className = 'peer';
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = pr.user.color || '#6ea8ff';
+    const nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = pr.user.name || 'гость';
+    row.appendChild(dot);
+    row.appendChild(nm);
+    if (pr.cid === myCID) { const y = document.createElement('span'); y.className = 'you'; y.textContent = 'ты'; row.appendChild(y); }
+    if (pr.cid === hostCid) { const h = document.createElement('span'); h.className = 'hostb'; h.textContent = 'хост'; row.appendChild(h); }
+    if (host && pr.cid !== myCID) {
+      const seg = document.createElement('div');
+      seg.className = 'seg';
+      const cur = yperm.get(String(pr.cid)) || 'rw';
+      const mk = (val, label) => {
+        const bt = document.createElement('button');
+        bt.textContent = label;
+        if (cur === val) bt.className = 'on';
+        bt.onclick = (ev) => { ev.stopPropagation(); yperm.set(String(pr.cid), val); };
+        return bt;
+      };
+      seg.appendChild(mk('rw', 'запись'));
+      seg.appendChild(mk('ro', 'чтение'));
+      row.appendChild(seg);
+    }
+    peersPop.appendChild(row);
+  }
+  if (!host) {
+    const me = document.createElement('div');
+    me.className = 'peernote';
+    me.textContent = canWrite() ? 'твоё право: запись' : 'твоё право: только чтение';
+    peersPop.appendChild(me);
+  }
+}
+yperm.observe(() => { applyPerm(); renderPeers(); });
+peersBtn.onclick = (e) => { e.stopPropagation(); peersPop.classList.toggle('on'); if (peersPop.classList.contains('on')) renderPeers(); };
+document.addEventListener('click', (e) => { if (peersPop.classList.contains('on') && !peersPop.contains(e.target) && !peersBtn.contains(e.target)) peersPop.classList.remove('on'); });
+
 runBtn.onclick = run;
-document.getElementById('clearOutBtn').onclick = () => { yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); };
-document.getElementById('clearBtn').onclick = () => { ycode.delete(0, ycode.length); editor.focus(); };
+document.getElementById('clearOutBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); };
+document.getElementById('clearBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } ycode.delete(0, ycode.length); editor.focus(); };
 document.getElementById('copyOutBtn').onclick = (e) => {
   navigator.clipboard.writeText(out.innerText).then(() => popCopy(e.currentTarget), () => flash('не удалось скопировать'));
 };
-sel.onchange = () => { const ex = curExamples(); if (ex[sel.value]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[sel.value]); editor.focus(); sel.value = ''; } };
-document.getElementById('openBtn').onclick = () => document.getElementById('fileInput').click();
+sel.onchange = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } const ex = curExamples(); if (ex[sel.value]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[sel.value]); editor.focus(); sel.value = ''; } };
+document.getElementById('openBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } document.getElementById('fileInput').click(); };
 document.getElementById('fileInput').onchange = (e) => {
   const f = e.target.files[0];
   if (!f) return;
@@ -757,5 +856,6 @@ function flash(msg) {
 }
 boot();
 </script>
+<div id="peersPop"></div>
 </body>
 </html>
