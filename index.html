@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0d10">
-<title>PyRun — онлайн компилятор Python в браузере</title>
-<meta name="description" content="Бесплатный онлайн-компилятор Python: пишите и запускайте код прямо в браузере без установки. Подсветка синтаксиса, подсказки, совместное редактирование, графики matplotlib, NumPy и pandas.">
+<title>PyRun — онлайн компилятор: Python, JavaScript, Lua, Ruby, C++, SQL</title>
+<meta name="description" content="Бесплатный онлайн-компилятор: Python 3.10–3.14, JavaScript, Lua, Ruby, C++ и SQL прямо в браузере без установки. Подсветка синтаксиса, подсказки, совместное редактирование, графики matplotlib, NumPy и pandas.">
 <meta name="robots" content="index,follow">
-<meta property="og:title" content="PyRun — онлайн компилятор Python">
-<meta property="og:description" content="Запуск Python прямо в браузере: подсветка, подсказки, совместное редактирование в комнатах, графики matplotlib, NumPy и pandas. Без регистрации и установки.">
+<meta property="og:title" content="PyRun — онлайн компилятор Python, JS, Lua, Ruby, C++">
+<meta property="og:description" content="Запуск кода прямо в браузере: Python 3.10–3.14, JavaScript, Lua, Ruby, C++ и SQL. Подсветка, подсказки, совместное редактирование в комнатах, графики matplotlib. Без регистрации и установки.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://zyrqon.github.io/pyrun/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0d10'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='13' fill='none' stroke='%236ea8ff' stroke-opacity='.55'/%3E%3Ctext x='32' y='43' font-family='Arial,Helvetica,sans-serif' font-size='27' font-weight='bold' fill='%236ea8ff' text-anchor='middle'%3EPy%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"PyRun","url":"https://zyrqon.github.io/pyrun/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"Онлайн-компилятор Python: запуск кода прямо в браузере, подсветка синтаксиса, совместное редактирование, matplotlib, NumPy и pandas."}
+{"@context":"https://schema.org","@type":"WebApplication","name":"PyRun","url":"https://zyrqon.github.io/pyrun/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"Онлайн-компилятор: Python 3.10-3.14, JavaScript, Lua, Ruby, C++ и SQL прямо в браузере, подсветка синтаксиса, совместное редактирование, matplotlib, NumPy и pandas."}
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
@@ -98,7 +98,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
  <div id="top">
   <div class="logo"><span class="badge">Py</span>PyRun<span class="sub">онлайн Python</span></div>
   <div class="spacer"></div>
-  <select id="langSel" class="chip" title="Язык программирования"><option value="python">Python 3</option><option value="javascript">JavaScript</option></select>
+  <select id="langSel" class="chip" title="Язык программирования"><optgroup label="Python"><option value="python314">Python 3.14</option><option value="python313">Python 3.13</option><option value="python">Python 3.12</option><option value="python311">Python 3.11</option><option value="python310">Python 3.10</option></optgroup><option value="javascript">JavaScript</option><option value="lua">Lua</option><option value="ruby">Ruby</option><option value="cpp">C++</option><option value="sql">SQL</option></select>
   <select id="examples" class="chip"><option value="">Примеры</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7S13.9 16 14.5 19"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.7-.4 4.6 1 5 4.4"/></svg><span>Комната</span>
@@ -117,7 +117,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
     <span class="chip" id="openBtn">открыть</span>
     <span class="chip" id="saveBtn">скачать</span>
     <span class="chip" id="clearBtn">очистить</span>
-    <input type="file" id="fileInput" accept=".py,.js,.txt" hidden>
+    <input type="file" id="fileInput" accept=".py,.js,.lua,.rb,.cpp,.cc,.cxx,.h,.hpp,.sql,.txt" hidden>
    </div>
    <div id="editorwrap"><textarea id="code"></textarea></div>
   </div>
@@ -142,6 +142,10 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/lua/lua.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/ruby/ruby.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
@@ -176,11 +180,56 @@ const EXAMPLES_JS = {
  "Математика": "const rolls=Array.from({length:1000},()=>1+Math.floor(Math.random()*6));\nconst avg=rolls.reduce((s,x)=>s+x,0)/rolls.length;\nconsole.log('среднее за 1000 бросков кубика:',avg.toFixed(3));\nconsole.log('sqrt(2) =',Math.SQRT2);\nconsole.log('pi =',Math.PI.toFixed(5));"
 };
 
+const EXAMPLES_LUA = {
+ "Привет, мир": 'name = io.read()\nif name == nil or name == "" then name = "друг" end\nprint("Привет, " .. name .. "!")',
+ "Числа Фибоначчи": "a, b = 0, 1\nfor i = 1, 15 do\n  io.write(a, \" \")\n  a, b = b, a + b\nend\nprint()",
+ "Таблицы и сортировка": "local nums = {8, 3, 15, 1, 42, 7}\ntable.sort(nums)\nfor _, v in ipairs(nums) do io.write(v, \" \") end\nprint()\nlocal sum = 0\nfor _, v in ipairs(nums) do sum = sum + v end\nprint(\"сумма: \" .. sum)",
+ "Строки и функции": "function palindrome(s)\n  return s == s:reverse()\nend\nlocal words = {\"казак\", \"питон\", \"шалаш\"}\nfor _, w in ipairs(words) do\n  print(w, palindrome(w) and \"да\" or \"нет\")\nend"
+};
+
+const EXAMPLES_RB = {
+ "Привет, мир": "name = \"друг\"\nputs \"Привет, #{name}!\"\nputs \"Ruby #{RUBY_VERSION} работает прямо в браузере\"",
+ "Числа Фибоначчи": "a, b = 0, 1\n15.times do\n  print \"#{a} \"\n  a, b = b, a + b\nend\nputs",
+ "Массивы и блоки": "nums = [8, 3, 15, 1, 42, 7]\nputs \"было: #{nums.inspect}\"\nnums.sort!\nputs \"стало: #{nums.inspect}\"\nputs \"сумма: #{nums.sum}\"\nputs \"топ-3: #{nums.last(3).inspect}\"",
+ "Классы": "class Drone\n  def initialize(model, battery = 100)\n    @model = model\n    @battery = battery\n  end\n  def fly(minutes)\n    @battery = [@battery - minutes * 2, 0].max\n    \"#{@model} летит #{minutes} мин, заряд #{@battery}%\"\n  end\nend\nd = Drone.new(\"Cetus Pro\")\nputs d.fly(20)"
+};
+
+const EXAMPLES_CPP = {
+ "Привет, мир": "#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Привет, мир!\" << endl;\n    cout << \"C++ работает прямо в браузере\" << endl;\n    return 0;\n}",
+ "Сумма чисел": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << \"Сколько чисел сложить? \";\n    cin >> n;\n    int sum = 0;\n    for (int i = 0; i < n; i++) {\n        int x;\n        cin >> x;\n        sum += x;\n    }\n    cout << \"сумма: \" << sum << endl;\n    return 0;\n}",
+ "Таблица квадратов": "#include <iostream>\nusing namespace std;\n\nint main() {\n    for (int i = 1; i <= 10; i++) {\n        cout << i << \" в квадрате = \" << i * i << endl;\n    }\n    return 0;\n}"
+};
+
+const EXAMPLES_SQL = {
+ "Создать таблицу": "CREATE TABLE drones (\n  id INTEGER PRIMARY KEY,\n  model TEXT,\n  battery INTEGER\n);\nINSERT INTO drones (model, battery) VALUES\n  ('Cetus Pro', 92),\n  ('Bebop 2', 78),\n  ('Mavic 3', 95);\nSELECT * FROM drones;",
+ "Агрегаты": "CREATE TABLE sales (day TEXT, amount INTEGER);\nINSERT INTO sales VALUES\n  ('пн', 120), ('вт', 95), ('ср', 210),\n  ('чт', 180), ('пт', 260);\nSELECT day, amount FROM sales ORDER BY amount DESC;\nSELECT SUM(amount) AS total, ROUND(AVG(amount), 1) AS average FROM sales;",
+ "JOIN": "CREATE TABLE students (id INTEGER, name TEXT);\nCREATE TABLE scores (student_id INTEGER, score INTEGER);\nINSERT INTO students VALUES (1, 'Аня'), (2, 'Боря'), (3, 'Вика');\nINSERT INTO scores VALUES (1, 91), (2, 78), (3, 95);\nSELECT s.name, c.score\nFROM students s\nJOIN scores c ON c.student_id = s.id\nORDER BY c.score DESC;"
+};
+
 const sel = document.getElementById('examples');
 let lang = 'python';
 try { lang = localStorage.getItem('pyrun_lang') || 'python'; } catch(e) {}
 const langSel = document.getElementById('langSel');
-function curExamples(){ return lang === 'python' ? EXAMPLES : EXAMPLES_JS; }
+const PY_VERS = {
+  python314: '314.0.0', python313: '0.28.3', python: '0.26.4', python311: '0.25.1', python310: '0.22.0'
+};
+const LANGS = {
+  python314: { label: 'Python 3.14', mode: 'python' },
+  python313: { label: 'Python 3.13', mode: 'python' },
+  python: { label: 'Python 3.12', mode: 'python' },
+  python311: { label: 'Python 3.11', mode: 'python' },
+  python310: { label: 'Python 3.10', mode: 'python' },
+  javascript: { label: 'JavaScript', mode: 'javascript' },
+  lua: { label: 'Lua', mode: 'lua' },
+  ruby: { label: 'Ruby', mode: 'ruby' },
+  cpp: { label: 'C++', mode: 'text/x-c++src' },
+  sql: { label: 'SQL', mode: 'sql' }
+};
+function isPy(l) { return !!PY_VERS[l]; }
+function curExamples() {
+  if (isPy(lang)) return EXAMPLES;
+  return { javascript: EXAMPLES_JS, lua: EXAMPLES_LUA, ruby: EXAMPLES_RB, cpp: EXAMPLES_CPP, sql: EXAMPLES_SQL }[lang] || EXAMPLES_JS;
+}
 function fillExamples() {
   sel.innerHTML = '<option value="">Примеры</option>';
   for (const k of Object.keys(curExamples())) {
@@ -219,8 +268,212 @@ const status = document.getElementById('status'), statusText = document.getEleme
 const runBtn = document.getElementById('runBtn');
 const roomBtn = document.getElementById('roomBtn'), roomLabel = roomBtn.querySelector('span');
 let py = null, pyVersion = '', figsFn = null, running = false;
+const pys = {}, pyVers = {}, figsFns = {}, pyLoading = {};
+let luaEng = null, rubyVM = null, JSCPPref = null, SQLC = null;
 let room = null;
 const myName = 'Гость' + (10 + Math.floor(Math.random() * 90));
+
+// ---------- engines for other languages ----------
+const scriptCache = {};
+function loadScriptOnce(src) {
+  if (scriptCache[src]) return scriptCache[src];
+  scriptCache[src] = new Promise((res, rej) => {
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = () => res();
+    el.onerror = () => { delete scriptCache[src]; rej(new Error('не загрузился скрипт движка')); };
+    document.head.appendChild(el);
+  });
+  return scriptCache[src];
+}
+const lineBuf = {};
+function lineReset(k) { lineBuf[k] = ''; }
+function lineW(k, s) {
+  lineBuf[k] = (lineBuf[k] || '') + s;
+  let i;
+  while ((i = lineBuf[k].indexOf('\n')) >= 0) {
+    println(lineBuf[k].slice(0, i));
+    lineBuf[k] = lineBuf[k].slice(i + 1);
+  }
+}
+function lineFlush(k) { if (lineBuf[k]) { println(lineBuf[k]); lineBuf[k] = ''; } }
+function showLoad(msg) {
+  pv = 0; bar.style.width = '0%'; loadpct.textContent = msg;
+  document.getElementById('load').classList.remove('hidden');
+}
+function hideLoad() { document.getElementById('load').classList.add('hidden'); }
+function loadTicker() {
+  return setInterval(() => {
+    pv = Math.min(92, pv + 2);
+    bar.style.width = pv + '%';
+    loadpct.textContent = curLoadMsg + ' ' + Math.round(pv) + '%';
+  }, 400);
+}
+let curLoadMsg = '';
+
+const FIGS_PY = 'import io, base64, sys\n' +
+"def _pyrun_figs():\n" +
+"    if 'matplotlib.pyplot' not in sys.modules:\n" +
+'        return []\n' +
+'    import matplotlib.pyplot as plt\n' +
+'    figs = []\n' +
+'    for n in plt.get_fignums():\n' +
+"        buf = io.BytesIO()\n" +
+"        plt.figure(n).savefig(buf, format='png', dpi=110, bbox_inches='tight')\n" +
+"        figs.append(base64.b64encode(buf.getvalue()).decode())\n" +
+"    plt.close('all')\n" +
+'    return figs\n';
+
+const LUA_SHIM = "io.write = function(...) local t = {} for i, v in ipairs({...}) do t[i] = tostring(v) end pyrun_out(table.concat(t)) end\n" +
+"print = function(...) local t = {} for i, v in ipairs({...}) do t[i] = tostring(v) end pyrun_out(table.concat(t, '\\t') .. '\\n') end\n" +
+"io.read = function() return pyrun_in() or '' end\n";
+
+const RUBY_SHIM = 'require "js"\n' +
+'def print(*args)\n' +
+'  JS.global[:ruby_out].call(args.map { |a| a.to_s }.join(" "))\n' +
+'  nil\n' +
+'end\n' +
+'def puts(*args)\n' +
+'  print(args.map { |a| a.to_s }.join(" ") + "\\n")\n' +
+'  nil\n' +
+'end\n' +
+'def p(*args)\n' +
+'  print(args.map { |a| a.inspect }.join(" ") + "\\n")\n' +
+'  nil\n' +
+'end\n';
+
+async function ensurePy(l) {
+  if (pys[l]) return pys[l];
+  curLoadMsg = 'загружаю ' + LANGS[l].label;
+  showLoad(curLoadMsg);
+  const tick = loadTicker();
+  try {
+    await loadScriptOnce('https://cdn.jsdelivr.net/pyodide/v' + PY_VERS[l] + '/full/pyodide.js');
+    const p = await window.loadPyodide({
+      indexURL: 'https://cdn.jsdelivr.net/pyodide/v' + PY_VERS[l] + '/full/',
+      stdout: (s) => println(s),
+      stderr: (s) => println(s, 'err')
+    });
+    try { p.setStdin({ stdin: () => (prompt('input() ждёт ввода:') ?? '') + '\n' }); } catch (e0) {}
+    p.runPython(FIGS_PY);
+    try { figsFns[l] = p.globals.get('_pyrun_figs'); } catch (e0b) {}
+    pyVers[l] = p.runPython('import sys\nsys.version.split()[0]').toString();
+    pys[l] = p;
+  } catch (e) {
+    clearInterval(tick);
+    loadpct.textContent = 'не удалось загрузить: ' + e;
+    throw e;
+  }
+  clearInterval(tick);
+  hideLoad();
+  return pys[l];
+}
+function ensurePyBg(l) {
+  if (pys[l] || pyLoading[l]) return;
+  pyLoading[l] = true;
+  ensurePy(l).then(() => { pyLoading[l] = false; runBtn.disabled = false; setStatusIdle(); })
+    .catch(() => { pyLoading[l] = false; runBtn.disabled = false; setStatusIdle(); });
+}
+async function ensureLua() {
+  if (luaEng) return luaEng;
+  curLoadMsg = 'загружаю Lua';
+  showLoad(curLoadMsg);
+  const tick = loadTicker();
+  try {
+    const m = await import('https://esm.sh/wasmoon@1.16.0');
+    const factory = new m.LuaFactory('https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/dist/lua.wasm');
+    luaEng = await factory.createEngine();
+    luaEng.global.set('pyrun_out', (s) => lineW('lua', String(s)));
+    luaEng.global.set('pyrun_in', () => (prompt('io.read ждёт ввода:') ?? ''));
+    await luaEng.doString(LUA_SHIM);
+  } catch (e) {
+    clearInterval(tick);
+    loadpct.textContent = 'не удалось загрузить: ' + e;
+    throw e;
+  }
+  clearInterval(tick);
+  hideLoad();
+  return luaEng;
+}
+async function ensureRuby() {
+  if (rubyVM) return rubyVM;
+  curLoadMsg = 'загружаю Ruby (файл большой, это до минуты)';
+  showLoad(curLoadMsg);
+  const tick = loadTicker();
+  try {
+    const m = await import('https://esm.sh/@ruby/wasm-wasi@2.10.1');
+    const resp = await fetch('https://cdn.jsdelivr.net/npm/@ruby/3.4-wasm-wasi@2.10.1/dist/ruby+stdlib.wasm');
+    let mod;
+    try { mod = await WebAssembly.compileStreaming(resp); }
+    catch (e10) { mod = await WebAssembly.compile(await resp.arrayBuffer()); }
+    rubyVM = (await m.DefaultRubyVM(mod)).vm;
+    window.ruby_out = (s) => lineW('ruby', String(s));
+    rubyVM.eval(RUBY_SHIM);
+  } catch (e) {
+    clearInterval(tick);
+    loadpct.textContent = 'не удалось загрузить: ' + e;
+    throw e;
+  }
+  clearInterval(tick);
+  hideLoad();
+  return rubyVM;
+}
+async function ensureCpp() {
+  if (JSCPPref) return JSCPPref;
+  curLoadMsg = 'загружаю интерпретатор C++';
+  showLoad(curLoadMsg);
+  const tick = loadTicker();
+  try {
+    try {
+      const m = await import('https://esm.sh/JSCPP@2.0.9');
+      JSCPPref = m.default || m;
+    } catch (e11) {
+      await loadScriptOnce('https://cdn.jsdelivr.net/gh/felixhao28/JSCPP@gh-pages/dist/JSCPP.es5.min.js');
+      JSCPPref = window.JSCPP;
+    }
+  } catch (e) {
+    clearInterval(tick);
+    loadpct.textContent = 'не удалось загрузить: ' + e;
+    throw e;
+  }
+  clearInterval(tick);
+  hideLoad();
+  return JSCPPref;
+}
+async function ensureSql() {
+  if (SQLC) return SQLC;
+  curLoadMsg = 'загружаю SQLite';
+  showLoad(curLoadMsg);
+  const tick = loadTicker();
+  try {
+    await loadScriptOnce('https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-wasm.js');
+    SQLC = await window.initSqlJs({ locateFile: (f) => 'https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/' + f });
+  } catch (e) {
+    clearInterval(tick);
+    loadpct.textContent = 'не удалось загрузить: ' + e;
+    throw e;
+  }
+  clearInterval(tick);
+  hideLoad();
+  return SQLC;
+}
+function runSql(SQL, code) {
+  const db = new SQL.Database();
+  try {
+    const res = db.exec(code);
+    if (!res.length) { println('выполнено', 'dim'); return; }
+    for (const r of res) {
+      const cols = r.columns;
+      const rows = r.values;
+      const w = cols.map((c, i) => Math.max(String(c).length, ...rows.map((row) => (row[i] === null ? 'NULL' : String(row[i])).length)));
+      const line = (cells) => cells.map((c, i) => (c === null ? 'NULL' : String(c)).padEnd(w[i])).join(' | ');
+      println(line(cols));
+      println(cols.map((c, i) => '-'.repeat(w[i])).join('-+-'), 'dim');
+      for (const row of rows) println(line(row));
+    }
+  } finally { db.close(); }
+}
+
 
 function renderOut() {
   out.innerHTML = '';
@@ -271,9 +524,11 @@ async function boot() {
 "    plt.close('all')\n" +
 '    return figs\n');
     figsFn = py.globals.get('_pyrun_figs');
+    figsFns.python = figsFn;
     clearInterval(pTimer);
     bar.style.width = '100%'; loadpct.textContent = '100%';
     pyVersion = py.runPython('import sys\nsys.version.split()[0]').toString();
+    pyVers.python = pyVersion;
     document.getElementById('load').classList.add('hidden');
     runBtn.disabled = false;
     status.classList.add('on');
@@ -287,7 +542,8 @@ async function boot() {
 function setStatusIdle() {
   const rn = ymeta.get('running');
   if (room && rn && rn.by !== myName) statusText.textContent = rn.by + ' выполняет код';
-  else statusText.textContent = lang === 'python' ? 'Python ' + pyVersion + ' готов' : 'JavaScript готов';
+  else if (isPy(lang)) statusText.textContent = pyVers[lang] ? 'Python ' + pyVers[lang] + ' готов' : LANGS[lang].label + ' загрузится при запуске';
+  else statusText.textContent = LANGS[lang].label + ' готов';
 }
 ymeta.observe(() => {
   setStatusIdle();
@@ -297,10 +553,11 @@ ymeta.observe(() => {
 function setLang(l, sync) {
   lang = l;
   langSel.value = l;
-  editor.setOption('mode', l === 'python' ? 'python' : 'javascript');
+  editor.setOption('mode', LANGS[l].mode);
   fillExamples();
   try { localStorage.setItem('pyrun_lang', l); } catch(e) {}
-  runBtn.disabled = (l === 'python' && !py);
+  if (isPy(l)) ensurePyBg(l);
+  runBtn.disabled = (isPy(l) && !pys[l]);
   setStatusIdle();
   if (room && sync !== false && ymeta.get('lang') !== l) ymeta.set('lang', l);
 }
@@ -309,7 +566,9 @@ if (lang !== 'python') setLang(lang);
 
 async function run() {
   if (running) return;
-  if (lang === 'python' && !py) return;
+  if (isPy(lang) && !pys[lang]) {
+    try { await ensurePy(lang); } catch (e) { return; }
+  }
   running = true;
   runBtn.disabled = true;
   const t0 = performance.now();
@@ -319,18 +578,21 @@ async function run() {
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
     const code = ycode.toString();
-    if (lang === 'python') {
+    if (isPy(lang)) {
     statusText.textContent = 'подгружаю пакеты';
-    await py.loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
+    await pys[lang].loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
     statusText.textContent = 'выполняю';
-    const r = await py.runPythonAsync(code);
+    const r = await pys[lang].runPythonAsync(code);
     if (r !== undefined) println(String(r), 'ok');
     try {
-      const fp = figsFn();
-      const arr = (fp && fp.toJs) ? fp.toJs() : (fp || []);
-      for (const b64 of arr) yfigs.push(['data:image/png;base64,' + b64]);
+      const ff = figsFns[lang];
+      if (ff) {
+        const fp = ff();
+        const arr = (fp && fp.toJs) ? fp.toJs() : (fp || []);
+        for (const b64 of arr) yfigs.push(['data:image/png;base64,' + b64]);
+      }
     } catch (e2) {}
-    } else {
+    } else if (lang === 'javascript') {
       statusText.textContent = 'выполняю';
       await new Promise((resolve) => {
         const orig = {};
@@ -348,6 +610,29 @@ async function run() {
            .catch((e5) => { println(String(e5 && e5.stack ? e5.stack : e5), 'err'); resolve(); })
            .finally(() => { for (const m of ['log', 'info', 'warn', 'error']) console[m] = orig[m]; });
       });
+    } else if (lang === 'lua') {
+      const eng = await ensureLua();
+      statusText.textContent = 'выполняю';
+      lineReset('lua');
+      try { await eng.doString(code); } catch (e6) { println('Lua: ' + String(e6 && e6.message ? e6.message : e6), 'err'); }
+      lineFlush('lua');
+    } else if (lang === 'ruby') {
+      const vm = await ensureRuby();
+      statusText.textContent = 'выполняю';
+      try { vm.eval(code); } catch (e7) { println('Ruby: ' + String(e7 && e7.message ? e7.message : e7), 'err'); }
+    } else if (lang === 'cpp') {
+      const J = await ensureCpp();
+      statusText.textContent = 'выполняю';
+      lineReset('cpp');
+      try {
+        const ec = J.run(code, '', { stdio: { write: (s) => lineW('cpp', String(s)), drain: () => (prompt('cin ждёт ввода:') ?? '') + '\n' } });
+        if (ec !== undefined && ec !== 0) println('код выхода: ' + ec, 'dim');
+      } catch (e8) { println('C++: ' + String(e8 && e8.message ? e8.message : e8), 'err'); }
+      lineFlush('cpp');
+    } else if (lang === 'sql') {
+      const S = await ensureSql();
+      statusText.textContent = 'выполняю';
+      try { runSql(S, code); } catch (e9) { println('SQL: ' + String(e9 && e9.message ? e9.message : e9), 'err'); }
     }
     println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
