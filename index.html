@@ -393,6 +393,12 @@ async function ensureRuby() {
     let mod;
     try { mod = await WebAssembly.compileStreaming(resp); }
     catch (e10) { mod = await WebAssembly.compile(await resp.arrayBuffer()); }
+    if (!window.__pyrunLogWrapped) {
+      const origLog = console.log.bind(console);
+      window.__pyrunSink = null;
+      console.log = (rs) => { if (window.__pyrunSink) lineW('ruby', String(rs)); else origLog(rs); };
+      window.__pyrunLogWrapped = true;
+    }
     rubyVM = (await m.DefaultRubyVM(mod)).vm;
   } catch (e) {
     clearInterval(tick);
@@ -605,10 +611,10 @@ async function run() {
     } else if (lang === 'ruby') {
       const vm = await ensureRuby();
       statusText.textContent = 'выполняю';
-      const origLog = console.log;
-      console.log = (rs) => lineW('ruby', String(rs));
+      lineReset('ruby');
+      window.__pyrunSink = 'ruby';
       try { vm.eval(code); } catch (e7) { println('Ruby: ' + String(e7 && e7.message ? e7.message : e7), 'err'); }
-      finally { console.log = origLog; }
+      finally { window.__pyrunSink = null; lineFlush('ruby'); }
     } else if (lang === 'cpp') {
       const J = await ensureCpp();
       statusText.textContent = 'выполняю';
