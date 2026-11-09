@@ -214,16 +214,16 @@ const PY_VERS = {
   python314: '314.0.0', python313: '0.28.3', python: '0.26.4', python311: '0.25.1', python310: '0.22.0'
 };
 const LANGS = {
-  python314: { label: 'Python 3.14', mode: 'python' },
-  python313: { label: 'Python 3.13', mode: 'python' },
-  python: { label: 'Python 3.12', mode: 'python' },
-  python311: { label: 'Python 3.11', mode: 'python' },
-  python310: { label: 'Python 3.10', mode: 'python' },
-  javascript: { label: 'JavaScript', mode: 'javascript' },
-  lua: { label: 'Lua', mode: 'lua' },
-  ruby: { label: 'Ruby', mode: 'ruby' },
-  cpp: { label: 'C++', mode: 'text/x-c++src' },
-  sql: { label: 'SQL', mode: 'sql' }
+  python314: { label: 'Python 3.14', mode: 'python', ext: 'py' },
+  python313: { label: 'Python 3.13', mode: 'python', ext: 'py' },
+  python: { label: 'Python 3.12', mode: 'python', ext: 'py' },
+  python311: { label: 'Python 3.11', mode: 'python', ext: 'py' },
+  python310: { label: 'Python 3.10', mode: 'python', ext: 'py' },
+  javascript: { label: 'JavaScript', mode: 'javascript', ext: 'js' },
+  lua: { label: 'Lua', mode: 'lua', ext: 'lua' },
+  ruby: { label: 'Ruby', mode: 'ruby', ext: 'rb' },
+  cpp: { label: 'C++', mode: 'text/x-c++src', ext: 'cpp' },
+  sql: { label: 'SQL', mode: 'sql', ext: 'sql' }
 };
 function isPy(l) { return !!PY_VERS[l]; }
 function curExamples() {
@@ -692,10 +692,12 @@ document.getElementById('fileInput').onchange = (e) => {
   e.target.value = '';
 };
 document.getElementById('saveBtn').onclick = () => {
-  const blob = new Blob([ycode.toString()], { type: 'text/x-python' });
+  const L = LANGS[lang] || { ext: 'txt' };
+  const mime = { py: 'text/x-python', js: 'text/javascript', lua: 'text/x-lua', rb: 'text/x-ruby', cpp: 'text/x-c++src', sql: 'application/sql' }[L.ext] || 'text/plain';
+  const blob = new Blob([ycode.toString()], { type: mime });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'code.py';
+  a.download = 'main.' + L.ext;
   a.click();
   URL.revokeObjectURL(a.href);
 };
