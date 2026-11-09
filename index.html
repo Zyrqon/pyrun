@@ -381,7 +381,7 @@ async function ensureLua() {
   const tick = loadTicker();
   try {
     const m = await import('https://esm.sh/wasmoon@1.16.0');
-    const factory = new m.LuaFactory('https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/dist/lua.wasm');
+    const factory = new m.LuaFactory('https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/dist/glue.wasm');
     luaEng = await factory.createEngine();
     luaEng.global.set('pyrun_out', (s) => lineW('lua', String(s)));
     luaEng.global.set('pyrun_in', () => (prompt('io.read ждёт ввода:') ?? ''));
