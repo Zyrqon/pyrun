@@ -562,6 +562,7 @@ function setLang(l, sync) {
   if (room && sync !== false && ymeta.get('lang') !== l) ymeta.set('lang', l);
 }
 langSel.onchange = () => setLang(langSel.value);
+langSel.value = lang;
 if (lang !== 'python') setLang(lang);
 
 async function run() {
