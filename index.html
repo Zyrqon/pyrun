@@ -449,7 +449,18 @@ function renderTabs() {
     tabsEl.insertBefore(d, tabsSpacer);
   }
 }
+function swapPanes(n) {
+  const prev = activeTab;
+  if (n === 'main') { unbindCode(); editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor); }
+  else { editor.swapDoc(docForSplit(n)); editor.setOption('mode', modeFor(n)); }
+  if (prev === 'main') { editor2.swapDoc(mainDoc); editor2.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor2); }
+  else if (prev !== n) { editor2.swapDoc(docForSplit(prev)); editor2.setOption('mode', modeFor(prev)); }
+  splitTab = prev;
+  document.getElementById('splitName').textContent = prev === 'main' ? fileLabel() : prev;
+  try { localStorage.setItem('pyrun_split', prev); } catch (eS4) {}
+}
 function openFile(n) {
+  if (splitTab === n) swapPanes(n);
   activeTab = n;
   if (!openTabs.includes(n)) openTabs.push(n);
   if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
@@ -466,6 +477,7 @@ let splitTab = null;
 const splitDocs = {};
 function docForSplit(n) {
   if (n === 'main') return mainDoc;
+  if (extraDocs[n]) return extraDocs[n];
   if (!splitDocs[n]) { splitDocs[n] = CodeMirror.Doc(files[n] || '', modeFor(n)); splitDocs[n].on('change', () => { files[n] = splitDocs[n].getValue(); saveFiles(); }); }
   return splitDocs[n];
 }
