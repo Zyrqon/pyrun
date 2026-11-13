@@ -337,7 +337,6 @@ function bindMain() {
   if (!binding) binding = new CodemirrorBinding(ycode, editor);
 }
 function unbindCode() { if (binding) { try { binding.destroy(); } catch (eB) {} binding = null; } }
-renderTabs(); renderTree();
 const sbPos = document.getElementById('sbPos');
 editor.on('cursorActivity', () => { const c = editor.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
 
@@ -410,6 +409,7 @@ document.getElementById('newFileBtn').onclick = () => {
   if (files[nm] !== undefined || nm.startsWith('main.')) { flash('такой файл уже есть'); return; }
   files[nm] = ''; saveFiles(); openFile(nm);
 };
+renderTabs(); renderTree();
 
 const isRoom = location.hash.startsWith('#room=');
 if (!isRoom) {
