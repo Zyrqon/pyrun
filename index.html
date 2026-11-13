@@ -842,6 +842,21 @@ function renderOut() {
 yout.observe(renderOut);
 yfigs.observe(renderOut);
 
+function cleanPyTrace(e) {
+  const lines = String(e).split('\n');
+  const keep = [];
+  let drop = false;
+  for (const ln of lines) {
+    const m = ln.match(/^\s*File "([^"]*)"/);
+    if (m) drop = /_pyodide|\/lib\/python|pyodide/.test(m[1]);
+    if (/^[A-Za-z_][\w.]*(Error|Interrupt|Exit|Warning)\b/.test(ln)) drop = false;
+    if (!drop) keep.push(ln);
+  }
+  let t = keep.join('\n').replace(/\n{2,}/g, '\n').trim();
+  if (t.startsWith('PythonError: ')) t = t.slice(13);
+  return t || String(e).trim();
+}
+
 function println(text, cls) {
   yout.push([{ t: text, c: cls || '' }]);
 }
@@ -943,8 +958,6 @@ async function run(debugMode) {
   stdinAbortPy = isPy(lang);
   stdinPaused = false;
   stdinBuf = stdinHistory.slice();
-  yout.delete(0, yout.length);
-  yfigs.delete(0, yfigs.length);
   println('запуск' + (room ? ' — ' + myName : '') + (debugMode ? ' (отладка)' : ''), 'dim');
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
@@ -1015,7 +1028,10 @@ async function run(debugMode) {
     }
     println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
-    if (!stdinPaused && !String(e).includes('PYRUN_NEED_INPUT')) println(String(e).split('\n').filter(l => l).join('\n'), 'err');
+    if (!stdinPaused && !String(e).includes('PYRUN_NEED_INPUT')) {
+      stdinHistory = []; stdinBuf = [];
+      println(cleanPyTrace(e), 'err');
+    }
   }
   stdinPaused = false;
   if (room) ymeta.set('running', null);
