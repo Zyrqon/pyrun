@@ -451,13 +451,18 @@ function renderTabs() {
 }
 function swapPanes(n) {
   const prev = activeTab;
-  if (n === 'main') { unbindCode(); editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor); }
+  if (prev === n) return;
+  unbindCode();
+  const tmp = CodeMirror.Doc('', 'null');
+  editor2.swapDoc(tmp);
+  if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor); }
   else { editor.swapDoc(docForSplit(n)); editor.setOption('mode', modeFor(n)); }
   if (prev === 'main') { editor2.swapDoc(mainDoc); editor2.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor2); }
-  else if (prev !== n) { editor2.swapDoc(docForSplit(prev)); editor2.setOption('mode', modeFor(prev)); }
+  else { editor2.swapDoc(docForSplit(prev)); editor2.setOption('mode', modeFor(prev)); }
   splitTab = prev;
   document.getElementById('splitName').textContent = prev === 'main' ? fileLabel() : prev;
   try { localStorage.setItem('pyrun_split', prev); } catch (eS4) {}
+  renderTabs(); renderTree();
 }
 function openFile(n) {
   if (splitTab === n) swapPanes(n);
@@ -465,7 +470,7 @@ function openFile(n) {
   if (!openTabs.includes(n)) openTabs.push(n);
   if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
   else {
-    unbindCode();
+    if (binding && binding.editor === editor) unbindCode();
     if (!extraDocs[n]) { extraDocs[n] = CodeMirror.Doc(files[n] || '', modeFor(n)); extraDocs[n].on('change', () => { files[n] = extraDocs[n].getValue(); saveFiles(); }); }
     editor.swapDoc(extraDocs[n]);
     editor.setOption('mode', modeFor(n));
