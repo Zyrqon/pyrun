@@ -543,6 +543,7 @@ renderTabs(); renderTree();
   showInRight(saved);
 })();
 
+setTimeout(function(){try{var g=document.querySelector('#paneR .CodeMirror-gutters'),sc=document.querySelector('#paneR .CodeMirror-scroll'),w=document.querySelector('#paneR .CodeMirror'),p=document.getElementById('paneR');document.title='DBG '+JSON.stringify({p:Math.round(p.getBoundingClientRect().height),w:w?Math.round(w.getBoundingClientRect().height):0,sc:sc?Math.round(sc.getBoundingClientRect().height):0,g:g?Math.round(g.getBoundingClientRect().height):0,gh:g?getComputedStyle(g).height:null});}catch(e){document.title='DBGERR '+e.message;}},3000);
 const isRoom = location.hash.startsWith('#room=');
 if (!isRoom) {
   let init = '';
