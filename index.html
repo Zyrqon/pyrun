@@ -138,6 +138,24 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
 #inline input::placeholder{color:#5a5f63}
 .CodeMirror{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace !important}
 #outwrap{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+.menu{position:relative}
+.mdd{display:none;position:absolute;top:calc(100% + 2px);left:-4px;background:#3c3f41;border:1px solid #4b4f52;border-radius:8px;min-width:215px;padding:4px;z-index:60;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.menu.open .mdd{display:block}
+.mi{display:flex;justify-content:space-between;gap:20px;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:12.5px;color:#bbbbbb;white-space:nowrap}
+.mi:hover{background:#4b6eaf;color:#fff}
+.mi i{font-style:normal;color:#808080;font-size:11px}
+.mi:hover i{color:#dfe6f5}
+#editorwrap{display:flex}
+#editorwrap .pane{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+#editorwrap .pane .CodeMirror{flex:1;height:auto;position:absolute;inset:0}
+#paneR{border-left:1px solid #4b4f52}
+.phead{display:flex;align-items:center;justify-content:space-between;padding:0 8px;height:24px;flex:none;font-size:11px;color:#808080;background:#313335;border-bottom:1px solid #4b4f52}
+.phead-x{cursor:pointer;padding:0 5px;font-size:13px}
+.phead-x:hover{color:#bbbbbb}
+.tsp{margin-left:6px;opacity:.4;cursor:pointer;font-size:12px;flex:none}
+.tsp:hover{opacity:1;color:#589df6}
+.tab.split .tsp{opacity:1;color:#589df6}
 </style>
 
 <style id="fo-mobile">
@@ -155,7 +173,30 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
 <div id="app">
  <div id="top">
   <div class="logo"><span class="badge">Py</span>PyRun</div>
-  <span class="menu">Файл</span><span class="menu">Правка</span><span class="menu">Вид</span><span class="menu">Запуск</span><span class="menu">Справка</span>
+  <div class="menu" id="mFile">Файл<div class="mdd">
+   <span class="mi" data-act="newfile">Новый файл</span>
+   <span class="mi" data-act="open">Открыть файл…</span>
+   <span class="mi" data-act="save">Скачать активный файл</span>
+   <span class="mi" data-act="closetab">Закрыть вкладку</span>
+  </div></div>
+  <div class="menu" id="mEdit">Правка<div class="mdd">
+   <span class="mi" data-act="copyall">Копировать всё</span>
+   <span class="mi" data-act="selall">Выделить всё</span>
+   <span class="mi" data-act="clear">Очистить</span>
+  </div></div>
+  <div class="menu" id="mView">Вид<div class="mdd">
+   <span class="mi" data-act="sidebar">Показать/скрыть проводник</span>
+   <span class="mi" data-act="split">Разделить окно</span>
+   <span class="mi" data-act="wrap">Перенос строк</span>
+  </div></div>
+  <div class="menu" id="mRun">Запуск<div class="mdd">
+   <span class="mi" data-act="run">Запустить<i>Ctrl+Enter</i></span>
+   <span class="mi" data-act="debug">Отладка (Python)</span>
+   <span class="mi" data-act="clearout">Очистить вывод</span>
+  </div></div>
+  <div class="menu" id="mHelp">Справка<div class="mdd">
+   <span class="mi" data-act="about">О PyRun</span>
+  </div></div>
   <select id="langSel" class="chip" title="Язык программирования"><optgroup label="Python"><option value="python314">Python 3.14</option><option value="python313">Python 3.13</option><option value="python">Python 3.12</option><option value="python311">Python 3.11</option><option value="python310">Python 3.10</option></optgroup><option value="javascript">JavaScript</option><option value="lua">Lua</option><option value="ruby">Ruby</option><option value="cpp">C++</option><option value="sql">SQL</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7S13.9 16 14.5 19"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.7-.4 4.6 1 5 4.4"/></svg><span>Комната</span>
@@ -165,6 +206,9 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
   </button>
   <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Ссылка
+  </button>
+  <button class="btn ghost" id="debugBtn" title="Отладка: трассировка строк с переменными (Python)">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="7" width="8" height="11" rx="4"/><path d="M12 7V4M8.5 9 5 7.5M8.5 13H4.5M8.5 17 5 18.5M15.5 9 19 7.5M15.5 13h4M15.5 17 19 18.5"/></svg>Отладка
   </button>
   <button class="btn" id="runBtn" disabled>
    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Запустить
@@ -187,7 +231,13 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
      <span class="chip" id="clearBtn">очистить</span>
      <input type="file" id="fileInput" accept=".py,.js,.lua,.rb,.cpp,.cc,.cxx,.h,.hpp,.sql,.txt" hidden>
     </div>
-    <div id="editorwrap"><textarea id="code"></textarea></div>
+    <div id="editorwrap">
+     <div class="pane" id="paneL"><textarea id="code"></textarea></div>
+     <div class="pane" id="paneR" style="display:none">
+      <div class="phead"><span id="splitName"></span><span class="phead-x" id="splitClose" title="убрать разделение">×</span></div>
+      <textarea id="code2"></textarea>
+     </div>
+    </div>
    </div>
   </div>
   <div id="panel">
@@ -328,7 +378,7 @@ const yperm = ydoc.getMap('perm');
 const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
   mode: 'python', theme: 'darcula', lineNumbers: true, indentUnit: 4,
   matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
-  extraKeys: {'Ctrl-Enter': run, 'Cmd-Enter': run, 'Shift-Enter': run, 'Ctrl-Space': 'autocomplete'}
+  extraKeys: {'Ctrl-Enter': () => run(false), 'Cmd-Enter': () => run(false), 'Shift-Enter': () => run(false), 'Ctrl-Space': 'autocomplete'}
 });
 let binding = new CodemirrorBinding(ycode, editor);
 function bindMain() {
@@ -339,6 +389,11 @@ function bindMain() {
 function unbindCode() { if (binding) { try { binding.destroy(); } catch (eB) {} binding = null; } }
 const sbPos = document.getElementById('sbPos');
 editor.on('cursorActivity', () => { const c = editor.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
+const editor2 = CodeMirror.fromTextArea(document.getElementById('code2'), {
+  lineNumbers: true, matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
+  extraKeys: {'Ctrl-Enter': () => run(false), 'Cmd-Enter': () => run(false), 'Shift-Enter': () => run(false), 'Ctrl-Space': 'autocomplete'}
+});
+editor2.on('cursorActivity', () => { const c = editor2.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
 
 // ---------- проект: файлы ----------
 const EXT_COLOR = { py: '#ffd866', js: '#f1e05a', lua: '#519aba', rb: '#cc5e5e', cpp: '#f34b7d', cc: '#f34b7d', h: '#f34b7d', sql: '#e38c00', txt: '#a9b7c6', md: '#519aba', csv: '#89b56d', json: '#cbcb41' };
@@ -367,7 +422,7 @@ function renderTree() {
     d.appendChild(iconEl(n));
     const sp = document.createElement('span'); sp.textContent = n; d.appendChild(sp);
     const x = document.createElement('span'); x.className = 'fx'; x.textContent = '×'; x.title = 'удалить файл';
-    x.onclick = (ev) => { ev.stopPropagation(); delete files[n]; delete extraDocs[n]; openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); saveFiles(); renderTree(); renderTabs(); };
+    x.onclick = (ev) => { ev.stopPropagation(); if (splitTab === n) closeSplit(); delete files[n]; delete extraDocs[n]; delete splitDocs[n]; openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); saveFiles(); renderTree(); renderTabs(); };
     d.appendChild(x);
     d.onclick = () => openFile(n);
     treeFiles.appendChild(d);
@@ -377,12 +432,15 @@ function renderTabs() {
   [...tabsEl.querySelectorAll('.tab')].forEach((t) => t.remove());
   for (const n of openTabs) {
     const label = n === 'main' ? fileLabel() : n;
-    const d = document.createElement('div'); d.className = 'tab' + (activeTab === n ? ' on' : '');
+    const d = document.createElement('div'); d.className = 'tab' + (activeTab === n ? ' on' : '') + (splitTab === n ? ' split' : '');
     d.appendChild(iconEl(label));
     const sp = document.createElement('span'); sp.textContent = label; if (n === 'main') sp.id = 'tabName'; d.appendChild(sp);
+    const tsplit = document.createElement('span'); tsplit.className = 'tsp'; tsplit.textContent = '⇥'; tsplit.title = 'открыть во второй панели';
+    tsplit.onclick = (ev) => { ev.stopPropagation(); toggleSplit(n); };
+    d.appendChild(tsplit);
     if (n !== 'main') {
       const x = document.createElement('span'); x.className = 'tx'; x.textContent = '×';
-      x.onclick = (ev) => { ev.stopPropagation(); openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); else { renderTabs(); renderTree(); } };
+      x.onclick = (ev) => { ev.stopPropagation(); if (splitTab === n) closeSplit(); openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); else { renderTabs(); renderTree(); } };
       d.appendChild(x);
     }
     d.onclick = () => openFile(n);
@@ -391,6 +449,7 @@ function renderTabs() {
 }
 function openFile(n) {
   activeTab = n;
+  if (!openTabs.includes(n)) openTabs.push(n);
   if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
   else {
     unbindCode();
@@ -401,6 +460,41 @@ function openFile(n) {
   editor.focus();
   renderTabs(); renderTree();
 }
+let splitTab = null;
+const splitDocs = {};
+function docForSplit(n) {
+  if (n === 'main') return mainDoc;
+  if (!splitDocs[n]) { splitDocs[n] = CodeMirror.Doc(files[n] || '', modeFor(n)); splitDocs[n].on('change', () => { files[n] = splitDocs[n].getValue(); saveFiles(); }); }
+  return splitDocs[n];
+}
+function showInRight(n) {
+  splitTab = n;
+  if (n === 'main') { unbindCode(); editor2.swapDoc(mainDoc); editor2.setOption('mode', LANGS[lang].mode); binding = new CodemirrorBinding(ycode, editor2); }
+  else { editor2.swapDoc(docForSplit(n)); editor2.setOption('mode', modeFor(n)); }
+  document.getElementById('splitName').textContent = n === 'main' ? fileLabel() : n;
+  document.getElementById('paneR').style.display = 'flex';
+  try { localStorage.setItem('pyrun_split', n); } catch (eS2) {}
+  renderTabs(); renderTree();
+}
+function closeSplit() {
+  const was = splitTab; splitTab = null;
+  try { localStorage.removeItem('pyrun_split'); } catch (eS3) {}
+  if (was === 'main') { unbindCode(); binding = null; }
+  document.getElementById('paneR').style.display = 'none';
+  if (activeTab === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
+  renderTabs(); renderTree();
+}
+function toggleSplit(n) {
+  if (splitTab === n) { closeSplit(); return; }
+  if (activeTab === n) {
+    const others = openTabs.filter((t) => t !== n);
+    if (others.length) openFile(others[0]);
+    else if (n === 'main') { files['second.py'] = '# второй файл — пиши здесь\n'; saveFiles(); openFile('second.py'); }
+    else openFile('main');
+  }
+  showInRight(n);
+}
+document.getElementById('splitClose').onclick = () => closeSplit();
 document.getElementById('newFileBtn').onclick = () => {
   const name = prompt('Имя файла (например data.txt)');
   if (!name) return;
@@ -410,6 +504,17 @@ document.getElementById('newFileBtn').onclick = () => {
   files[nm] = ''; saveFiles(); openFile(nm);
 };
 renderTabs(); renderTree();
+(function () {
+  let saved = null;
+  try { saved = localStorage.getItem('pyrun_split'); } catch (eS0) {}
+  if (!saved || (saved !== 'main' && files[saved] === undefined)) return;
+  if (saved === 'main') {
+    const others = openTabs.filter((t) => t !== 'main');
+    if (others.length) openFile(others[0]);
+    else { files['second.py'] = '# второй файл — пиши здесь\n'; saveFiles(); openFile('second.py'); }
+  }
+  showInRight(saved);
+})();
 
 const isRoom = location.hash.startsWith('#room=');
 if (!isRoom) {
@@ -501,6 +606,19 @@ const FIGS_PY = 'import io, base64, sys\n' +
 "        figs.append(base64.b64encode(buf.getvalue()).decode())\n" +
 "    plt.close('all')\n" +
 '    return figs\n';
+
+const DEBUG_SRC = "import sys as _sys\n" +
+"def _pyrun_tr(frame, event, arg):\n" +
+"    if event == 'line' and frame.f_code.co_filename == '<pyrun>':\n" +
+"        _vs = {k: v for k, v in frame.f_locals.items() if not k.startswith('_')}\n" +
+"        _s = ', '.join(k + ' = ' + repr(_vs[k])[:48] for k in _vs)\n" +
+"        print('\u2316 \u0441\u0442\u0440 ' + str(frame.f_lineno) + (' \u00b7 ' + _s if _s else ''))\n" +
+"    return _pyrun_tr\n" +
+"_sys.settrace(_pyrun_tr)\n" +
+"try:\n" +
+"    exec(compile(_pyrun_src, '<pyrun>', 'exec'), globals())\n" +
+"finally:\n" +
+"    _sys.settrace(None)\n";
 
 const LUA_SHIM = "io.write = function(...) local t = {} for i, v in ipairs({...}) do t[i] = tostring(v) end pyrun_out(table.concat(t)) end\n" +
 "print = function(...) local t = {} for i, v in ipairs({...}) do t[i] = tostring(v) end pyrun_out(table.concat(t, '\\t') .. '\\n') end\n" +
@@ -737,6 +855,8 @@ function setLang(l, sync) {
   try { document.getElementById('sbLang').textContent = LANGS[l].label; } catch(e) {}
   langSel.value = l;
   if (activeTab === 'main') editor.setOption('mode', LANGS[l].mode);
+  try { if (splitTab === 'main') editor2.setOption('mode', LANGS[l].mode); } catch (eL2) {}
+  try { document.getElementById('splitName').textContent = fileLabel(); } catch (eL3) {}
   try { renderTabs(); renderTree(); } catch (eL) {}
   fillExamples();
   try { localStorage.setItem('pyrun_lang', l); } catch(e) {}
@@ -749,9 +869,10 @@ langSel.onchange = () => { if (room && !canWrite()) { flash('язык меняе
 langSel.value = lang;
 if (lang !== 'python') setLang(lang);
 
-async function run() {
+async function run(debugMode) {
   if (running) return;
-  const code = ycode.toString();
+  let code = ycode.toString();
+  if (!room && activeTab !== 'main' && files[activeTab] !== undefined && extOf(activeTab) === LANGS[lang].ext) code = files[activeTab];
   const codeNoCmt = code.split('\n').filter(l => !/^\s*(#|\/\/|--)/.test(l)).join('\n');
   if (NEED_RE.test(codeNoCmt) && !stdinQueue.length && inlineBox.style.display === 'none') {
     needInput = true;
@@ -771,14 +892,20 @@ async function run() {
   stdinBuf = stdinQueue.slice(); stdinQueue.length = 0;
   yout.delete(0, yout.length);
   yfigs.delete(0, yfigs.length);
-  println('запуск' + (room ? ' — ' + myName : ''), 'dim');
+  println('запуск' + (room ? ' — ' + myName : '') + (debugMode ? ' (отладка)' : ''), 'dim');
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
     if (isPy(lang)) {
     statusText.textContent = 'подгружаю пакеты';
     await pys[lang].loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
     statusText.textContent = 'выполняю';
-    const r = await pys[lang].runPythonAsync(code);
+    let r;
+    if (debugMode && isPy(lang)) {
+      pys[lang].globals.set('_pyrun_src', code);
+      r = await pys[lang].runPythonAsync(DEBUG_SRC);
+    } else {
+      r = await pys[lang].runPythonAsync(code);
+    }
     if (r !== undefined) println(String(r), 'ok');
     try {
       const ff = figsFns[lang];
@@ -953,7 +1080,43 @@ yperm.observe(() => { applyPerm(); renderPeers(); });
 peersBtn.onclick = (e) => { e.stopPropagation(); peersPop.classList.toggle('on'); if (peersPop.classList.contains('on')) renderPeers(); };
 document.addEventListener('click', (e) => { if (peersPop.classList.contains('on') && !peersPop.contains(e.target) && !peersBtn.contains(e.target)) peersPop.classList.remove('on'); });
 
-runBtn.onclick = run;
+runBtn.onclick = () => run(false);
+document.getElementById('debugBtn').onclick = () => run(true);
+
+// ---------- верхнее меню ----------
+const menus = [...document.querySelectorAll('#top .menu')];
+let openMenu = null;
+function closeMenus() { menus.forEach((m) => m.classList.remove('open')); openMenu = null; }
+menus.forEach((m) => {
+  m.onclick = (ev) => { ev.stopPropagation(); const was = m.classList.contains('open'); closeMenus(); if (!was) { m.classList.add('open'); openMenu = m; } };
+  m.onmouseenter = () => { if (openMenu && openMenu !== m) { closeMenus(); m.classList.add('open'); openMenu = m; } };
+  m.querySelectorAll('.mi').forEach((mi) => {
+    mi.onclick = (ev) => { ev.stopPropagation(); const act = mi.dataset.act; closeMenus(); doMenu(act); };
+  });
+});
+document.addEventListener('click', () => closeMenus());
+function doMenu(act) {
+  if (act === 'newfile') document.getElementById('newFileBtn').click();
+  else if (act === 'open') document.getElementById('fileInput').click();
+  else if (act === 'save') document.getElementById('saveBtn').click();
+  else if (act === 'closetab') {
+    if (activeTab !== 'main') { const n = activeTab; if (splitTab === n) closeSplit(); openTabs = openTabs.filter((t) => t !== n); openFile('main'); }
+    else flash('это последняя вкладка');
+  }
+  else if (act === 'copyall') {
+    const t = activeTab === 'main' ? ycode.toString() : (files[activeTab] || '');
+    try { navigator.clipboard.writeText(t); flash('скопировано'); } catch (eC) {}
+  }
+  else if (act === 'selall') editor.execCommand('selectAll');
+  else if (act === 'clear') document.getElementById('clearBtn').click();
+  else if (act === 'sidebar') { const sb = document.getElementById('sidebar'); sb.style.display = sb.style.display === 'none' ? '' : 'none'; }
+  else if (act === 'split') toggleSplit(activeTab);
+  else if (act === 'wrap') { const w = !editor.getOption('lineWrapping'); editor.setOption('lineWrapping', w); editor2.setOption('lineWrapping', w); }
+  else if (act === 'run') run(false);
+  else if (act === 'debug') run(true);
+  else if (act === 'clearout') document.getElementById('clearOutBtn').click();
+  else if (act === 'about') flash('PyRun — онлайн-компилятор: Python, JavaScript, Lua, Ruby, C++, SQL');
+}
 document.getElementById('clearOutBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); };
 document.getElementById('clearBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } if (activeTab === 'main') { ycode.delete(0, ycode.length); } else { extraDocs[activeTab].setValue(''); } editor.focus(); };
 document.getElementById('copyOutBtn').onclick = (e) => {
