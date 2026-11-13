@@ -51,6 +51,11 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(700px 
 .chip{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:4px 11px;background:rgba(255,255,255,.03);cursor:pointer;white-space:nowrap;flex:none;min-height:26px}
 .chip:hover{color:var(--text)}
 select.chip{appearance:auto;-webkit-appearance:none;color:var(--text);font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+#codebar,#outbar{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--line);flex:none;background:rgba(255,255,255,.02)}
+#codebar .t,#outbar .t{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:600;color:var(--dim);text-transform:lowercase;letter-spacing:.4px}
+#codebar .spacer,#outbar .spacer{flex:1}
+#outPane #editorwrap{flex:1.15}
+#outPane #outwrap{flex:1}
 #editorwrap{flex:1;min-height:0;position:relative}
 .CodeMirror{height:100%;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:transparent!important;color:#eef2f7}
 .cm-s-material-darker .CodeMirror-gutters{background:rgba(255,255,255,.02);border-right:1px solid var(--line)}
@@ -88,8 +93,8 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 
 @media(max-width:760px){
  #main{flex-direction:column;padding:0 8px calc(8px + env(safe-area-inset-bottom));gap:8px}
- #editPane{flex:1.25}
  #outPane{flex:1}
+ #outPane #editorwrap{flex:1.2}
  .pane{border-radius:14px}
  #top{padding:8px 10px;gap:8px}
  #top .sub{display:none}
@@ -161,20 +166,20 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
   </button>
  </div>
  <div id="main">
-  <div class="pane" id="editPane">
-   <div class="phead"><span class="t">КОД</span><div class="spacer"></div>
+
+  <div class="pane" id="outPane">
+   <div class="phead"><span class="dots"><i></i><i></i><i></i></span><span class="t term">терминал</span><div class="spacer"></div>
+    <span class="chip" id="copyOutBtn">копировать</span>
+    <span class="chip" id="clearOutBtn">очистить вывод</span>
+   </div>
+   <div id="codebar"><span class="t">код</span><div class="spacer"></div>
     <span class="chip" id="openBtn">открыть</span>
     <span class="chip" id="saveBtn">скачать</span>
     <span class="chip" id="clearBtn">очистить</span>
     <input type="file" id="fileInput" accept=".py,.js,.lua,.rb,.cpp,.cc,.cxx,.h,.hpp,.sql,.txt" hidden>
    </div>
    <div id="editorwrap"><textarea id="code"></textarea></div>
-  </div>
-  <div class="pane" id="outPane">
-   <div class="phead"><span class="dots"><i></i><i></i><i></i></span><span class="t term">терминал</span><div class="spacer"></div>
-    <span class="chip" id="copyOutBtn">копировать</span>
-    <span class="chip" id="clearOutBtn">очистить вывод</span>
-   </div>
+   <div id="outbar"><span class="t">вывод</span><div class="spacer"></div></div>
    <div id="outwrap"></div>
   </div>
  </div>
