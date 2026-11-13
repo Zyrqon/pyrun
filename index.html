@@ -569,7 +569,7 @@ if (!isRoom) {
 editor.on('change', () => { if (!room && activeTab === 'main') { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} } });
 
 const out = document.getElementById('outwrap');
-let stdinHistory = [], stdinBuf = [], needInput = false, stdinAbortPy = false;
+let stdinHistory = [], stdinBuf = [], needInput = false, stdinAbortPy = false, stdinPaused = false;
 const inlineBox = document.getElementById('inline'), inField = document.getElementById('inField');
 const NEED_RE = /\binput\s*\(|\bio\.read\s*\(|\bcin\s*>>|\bprompt\s*\(/;
 function stdinShift(){
@@ -579,7 +579,7 @@ function stdinShift(){
   inlineBox.style.display = 'flex';
   inField.focus();
   println('нужен ещё ввод: пиши в строке ниже и запусти снова', 'dim');
-  if (stdinAbortPy) throw new Error('PYRUN_NEED_INPUT');
+  if (stdinAbortPy) { stdinPaused = true; throw new Error('PYRUN_NEED_INPUT'); }
   return null;
 }
 inField.addEventListener('keydown', (e) => {
@@ -933,6 +933,7 @@ async function run(debugMode) {
   const t0 = performance.now();
   inlineBox.style.display = 'none';
   stdinAbortPy = isPy(lang);
+  stdinPaused = false;
   stdinBuf = stdinHistory.slice();
   yout.delete(0, yout.length);
   yfigs.delete(0, yfigs.length);
@@ -1006,9 +1007,9 @@ async function run(debugMode) {
     }
     println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
-    if (String(e).includes('PYRUN_NEED_INPUT')) { }
-    else println(String(e).split('\n').filter(l => l).join('\n'), 'err');
+    if (!stdinPaused && !String(e).includes('PYRUN_NEED_INPUT')) println(String(e).split('\n').filter(l => l).join('\n'), 'err');
   }
+  stdinPaused = false;
   if (room) ymeta.set('running', null);
   running = false;
   runBtn.disabled = false;
