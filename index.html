@@ -25,7 +25,7 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--text);font:13px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 
 #app{position:fixed;inset:0;display:flex;flex-direction:column}
-#top{display:flex;align-items:center;gap:8px;padding:0 12px;height:40px;flex:none;flex-wrap:wrap;background:#3c3c3c}
+#top{display:flex;align-items:center;gap:8px;padding:0 12px;height:40px;flex:none;overflow-x:auto;scrollbar-width:none;background:#3c3c3c}
 #top .logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:#fff}
 #top .logo .badge{width:22px;height:22px;display:grid;place-items:center;border-radius:5px;font-size:10.5px;font-weight:800;color:#fff;background:#0e639c}
 #top .spacer{flex:1}
@@ -139,7 +139,6 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
 <div id="app">
  <div id="top">
   <div class="logo"><span class="badge">Py</span>PyRun</div>
-  <div class="spacer"></div>
   <select id="langSel" class="chip" title="Язык программирования"><optgroup label="Python"><option value="python314">Python 3.14</option><option value="python313">Python 3.13</option><option value="python">Python 3.12</option><option value="python311">Python 3.11</option><option value="python310">Python 3.10</option></optgroup><option value="javascript">JavaScript</option><option value="lua">Lua</option><option value="ruby">Ruby</option><option value="cpp">C++</option><option value="sql">SQL</option></select>
   <select id="examples" class="chip"><option value="">Примеры</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
@@ -151,7 +150,6 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
   <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Ссылка
   </button>
-  <div id="status"><span class="dot"></span><span id="statusText"></span></div>
   <button class="btn" id="runBtn" disabled>
    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Запустить
   </button>
