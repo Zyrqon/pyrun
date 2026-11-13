@@ -158,6 +158,20 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
 .tsp{margin-left:6px;opacity:.4;cursor:pointer;font-size:12px;flex:none}
 .tsp:hover{opacity:1;color:#589df6}
 .tab.split .tsp{opacity:1;color:#589df6}
+
+/* панель Запуск: PyCharm 2026 new UI */
+#panel{background:#1e1f22;border-top:1px solid #393b40}
+#ptabs{height:40px;gap:8px;padding:0 8px 0 10px;border-bottom:1px solid #2c2f33}
+#ptabs .ptab{height:auto;font-size:13px;letter-spacing:0;text-transform:none;color:#dfe1e5;background:#2b2d30;border-radius:8px;padding:4px 13px 4px 10px;gap:7px}
+#ptabs .ptab svg{display:block;flex:none}
+#ptabs .chip{border:none;background:transparent;border-radius:7px;color:#9da0a8;padding:4px 7px;min-height:26px;display:flex;align-items:center;justify-content:center}
+#ptabs .chip:hover{background:#2b2d30;color:#dfe1e5}
+#outwrap{color:#bcbec4;padding:10px 16px 12px;font-size:13px}
+#inline{background:transparent;border-top:1px solid #2c2f33;padding:7px 12px 9px}
+#inline .p{color:#6f7278;padding-left:6px}
+#inline input{background:#2b2d30;border:1px solid #43454a;border-radius:8px;padding:5px 12px;color:#dfe1e5;caret-color:#dfe1e5;transition:border-color .15s ease,box-shadow .15s ease}
+#inline input:focus{border-color:#3574f0;box-shadow:0 0 0 1px rgba(53,116,240,.35);outline:none}
+#inline input::placeholder{color:#6f7278}
 </style>
 
 <style id="fo-mobile">
@@ -243,9 +257,9 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
    </div>
   </div>
   <div id="panel">
-   <div id="ptabs"><span class="ptab on">Запуск</span><div class="spacer"></div>
-    <span class="chip" id="copyOutBtn">копировать</span>
-    <span class="chip" id="clearOutBtn">очистить вывод</span>
+   <div id="ptabs"><span class="ptab on"><svg width="13" height="13" viewBox="0 0 24 24" fill="#57965c"><path d="M6 4l14 8-14 8z"/></svg>Запуск</span><div class="spacer"></div>
+    <span class="chip icobtn" id="copyOutBtn" title="копировать вывод"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></span>
+    <span class="chip icobtn" id="clearOutBtn" title="очистить вывод"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
    </div>
    <div id="outwrap"></div>
    <div id="inline" style="display:none"><span class="p">›</span><input id="inField" autocomplete="off" spellcheck="false" placeholder="ввод для программы"></div>
