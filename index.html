@@ -19,73 +19,63 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 <style>
-:root{--bg:#0b0d10;--card:rgba(22,26,32,.85);--card2:rgba(34,40,49,.9);--line:rgba(255,255,255,.08);--text:#eef2f7;--dim:#8d97a5;--accent:#6ea8ff;--green:#5bd08d;--red:#ff7a7a}
+:root{--bg:#1e1e1e;--card:#252526;--card2:#2d2d2d;--line:#3c3c3c;--text:#cccccc;--dim:#858585;--accent:#3794ff;--green:#3fb950;--red:#f48771}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
 html,body{height:100%}
-body{background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
-body::before{content:"";position:fixed;inset:0;background:radial-gradient(700px 380px at 20% 0%,rgba(110,168,255,.10),transparent 70%),radial-gradient(500px 320px at 85% 90%,rgba(140,110,255,.08),transparent 70%);pointer-events:none}
+body{background:var(--bg);color:var(--text);font:13px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 
 #app{position:fixed;inset:0;display:flex;flex-direction:column}
-#top{display:flex;align-items:center;gap:10px;padding:12px 16px;flex:none;flex-wrap:wrap}
-#top .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px}
-#top .logo .badge{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;font-size:14px;font-weight:800;color:var(--accent);background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3)}
-#top .sub{color:var(--dim);font-size:12.5px}
+#top{display:flex;align-items:center;gap:8px;padding:0 12px;height:40px;flex:none;flex-wrap:wrap;background:#3c3c3c}
+#top .logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:#fff}
+#top .logo .badge{width:22px;height:22px;display:grid;place-items:center;border-radius:5px;font-size:10.5px;font-weight:800;color:#fff;background:#0e639c}
 #top .spacer{flex:1}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s,filter .12s;white-space:nowrap;min-height:40px}
-.btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:#0e639c;color:#fff;border:none;border-radius:4px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:filter .12s;white-space:nowrap;min-height:32px}
+.btn.ghost{background:transparent;color:#e7e7e7;border:none}
 .btn:hover{filter:brightness(1.1)}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:default;filter:none}
-.btn svg{width:16px;height:16px}
-#status{font-size:12.5px;color:var(--dim);display:flex;align-items:center;gap:7px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.btn svg{width:15px;height:15px}
+#status{font-size:12px;color:var(--dim);display:flex;align-items:center;gap:7px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 #status .dot{width:8px;height:8px;border-radius:99px;background:#c9a44d;box-shadow:0 0 10px rgba(201,164,77,.8);flex:none}
 #status.on .dot{background:var(--green);box-shadow:0 0 10px rgba(91,208,141,.8)}
 #status.live .dot{background:#8c6eff;box-shadow:0 0 10px rgba(140,110,255,.9)}
 
-#main{flex:1;display:flex;min-height:0;padding:0 16px 16px;gap:14px}
-.pane{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;backdrop-filter:blur(14px);box-shadow:0 16px 44px rgba(0,0,0,.35)}
-.pane .phead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex:none;overflow-x:auto;scrollbar-width:none}
-.pane .phead::-webkit-scrollbar{display:none}
-.pane .phead .t{font-size:13px;font-weight:600;color:var(--dim);letter-spacing:.3px;flex:none}
-.pane .phead .spacer{flex:1}
-.chip{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:4px 11px;background:rgba(255,255,255,.03);cursor:pointer;white-space:nowrap;flex:none;min-height:26px}
-.chip:hover{color:var(--text)}
-select.chip{appearance:auto;-webkit-appearance:none;color:var(--text);font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
-#codebar,#outbar{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--line);flex:none;background:rgba(255,255,255,.02)}
-#codebar .t,#outbar .t{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:600;color:var(--dim);text-transform:lowercase;letter-spacing:.4px}
-#codebar .spacer,#outbar .spacer{flex:1}
-#outPane #editorwrap{flex:1.15}
-#outPane #outwrap{flex:1}
+#main{flex:1;display:flex;flex-direction:column;min-height:0}
+#work{flex:1;display:flex;min-height:0}
+#activity{width:44px;flex:none;background:#333333;display:flex;flex-direction:column;align-items:center;padding:6px 0}
+#activity .ai{width:44px;height:44px;display:grid;place-items:center;color:#858585;cursor:default}
+#activity .ai svg{width:22px;height:22px}
+#activity .ai.on{color:#fff;box-shadow:inset 2px 0 0 #fff}
+#activity .aflex{flex:1}
+#sidebar{width:200px;flex:none;background:#252526;border-right:1px solid #2b2b2b;overflow:auto;padding:4px 0;font-size:12.5px}
+#sidebar .shead{padding:6px 16px;color:#bbbbbb;font-size:11px;letter-spacing:.08em}
+#sidebar .sdir{padding:4px 16px;color:#cccccc;font-weight:600}
+#sidebar .sfile{display:flex;align-items:center;gap:7px;padding:3px 16px 3px 28px;color:#cccccc;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sidebar .sfile:hover{background:#2a2d2e}
+#sidebar .sfile.on{background:#37373d;color:#fff}
+#sidebar .sfile.ex{padding-left:42px;color:#a9a9a9}
+.ficon{width:11px;height:13px;border:1px solid currentColor;border-radius:1px;opacity:.65;flex:none}
+#editcol{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:#1e1e1e}
+#tabs{display:flex;align-items:center;height:35px;flex:none;background:#252526;border-bottom:1px solid #1e1e1e;gap:4px;overflow-x:auto;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+#tabs .tab{display:flex;align-items:center;gap:8px;height:35px;padding:0 10px 0 12px;background:#2d2d2d;color:#969696;font-size:13px;border-right:1px solid #252526;box-shadow:inset 0 1px 0 #3c3c3c;flex:none}
+#tabs .tab.on{background:#1e1e1e;color:#fff;box-shadow:inset 0 1px 0 #007acc}
+#tabs .tx{color:#6e6e6e;cursor:pointer}
+#tabs .spacer{flex:1}
+#tabs .chip{margin-right:5px}
 #editorwrap{flex:1;min-height:0;position:relative}
-.CodeMirror{height:100%;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:transparent!important;color:#eef2f7}
-.cm-s-material-darker .CodeMirror-gutters{background:rgba(255,255,255,.02);border-right:1px solid var(--line)}
-.cm-s-material-darker .CodeMirror-cursor{border-left:2px solid var(--accent)}
-.remote-caret{position:absolute;border-left:2px solid;border-radius:1px;margin-left:-1px;pointer-events:none}
-.remote-caret .n{position:absolute;top:-1.45em;left:-2px;font-size:11px;padding:1px 5px;border-radius:6px;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.CodeMirror-hints{z-index:60;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#161a20;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5)}
-.CodeMirror-hint{color:#eef2f7;padding:4px 10px}
-li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
-
-#outPane{background:linear-gradient(180deg,#0a0e13,#0c1118)}
-#outPane .phead{background:rgba(255,255,255,.03)}
-#outPane .phead .t{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;text-transform:lowercase;letter-spacing:.4px}
-#outPane .dots{display:flex;gap:6px;flex:none}
-#outPane .dots i{width:10px;height:10px;border-radius:99px;display:block}
-#outPane .dots i:nth-child(1){background:#ff5f57}
-#outPane .dots i:nth-child(2){background:#febc2e}
-#outPane .dots i:nth-child(3){background:#28c840}
-#outwrap{flex:1;min-height:0;overflow:auto;padding:12px 14px;background:transparent;color:#d8e2ee;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text}
-#outwrap .err{color:var(--red)}
-#outwrap .dim{color:var(--dim)}
-#outwrap .ok{color:var(--green)}
-#outwrap img.plot{max-width:100%;background:#fff;border-radius:10px;margin:8px 0;display:block;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-#inline{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line);flex:none;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#d8e2ee}
-#inline .p{color:var(--green);flex:none}
-#inline input{flex:1;background:none;border:none;outline:none;color:inherit;font:inherit;caret-color:var(--green)}
-#inline input::placeholder{color:var(--dim)}
-#outwrap::after{content:"▏";display:inline-block;color:#5bd08d;animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-
+#panel{height:40%;min-height:150px;flex:none;display:flex;flex-direction:column;border-top:1px solid #3c3c3c;background:#1e1e1e}
+#ptabs{display:flex;align-items:center;gap:16px;height:35px;flex:none;padding:0 10px 0 14px;border-bottom:1px solid #3c3c3c}
+#ptabs .ptab{font-size:11px;letter-spacing:.07em;color:#858585;text-transform:uppercase;height:100%;display:flex;align-items:center;cursor:pointer}
+#ptabs .ptab.on{color:#e7e7e7;box-shadow:inset 0 1px 0 #007acc}
+#ptabs .spacer{flex:1}
+#statusbar{height:24px;flex:none;background:#007acc;color:#fff;display:flex;align-items:center;gap:14px;padding:0 12px;font-size:12px;flex-wrap:nowrap;overflow:hidden}
+#statusbar .spacer{flex:1}
+#statusbar #status{color:#fff;flex:none;max-width:60%}
+#sbPos,#sbLang{white-space:nowrap;flex:none}
+.chip{font-size:11px;color:#a9a9a9;border:1px solid var(--line);border-radius:3px;padding:3px 9px;background:transparent;cursor:pointer;white-space:nowrap;flex:none;min-height:24px}
+.chip:hover{color:var(--text)}
+select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background:#2d2d2d;border-radius:3px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 #load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);z-index:50;transition:opacity .4s;padding:24px;text-align:center}
 #load.hidden{opacity:0;pointer-events:none}
 #load .badge{width:72px;height:72px;display:grid;place-items:center;border-radius:20px;font-size:26px;font-weight:800;color:var(--accent);background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3);animation:pulse 1.6s ease-in-out infinite}
@@ -96,16 +86,14 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 #load .bar i{display:block;height:100%;width:8%;border-radius:99px;background:linear-gradient(90deg,#6ea8ff,#8c6eff);transition:width .5s}
 
 @media(max-width:760px){
- #main{flex-direction:column;padding:0 8px calc(8px + env(safe-area-inset-bottom));gap:8px}
- #outPane{flex:1}
- #outPane #editorwrap{flex:1.2}
- .pane{border-radius:14px}
- #top{padding:8px 10px;gap:8px}
- #top .sub{display:none}
- .btn{padding:9px 14px;font-size:14px}
- .chip{padding:6px 12px;font-size:12px}
- select.chip{width:118px}
- #status{font-size:11.5px;order:9;width:100%}
+ #activity,#sidebar{display:none}
+ #panel{height:45%;min-height:120px}
+ #top{height:auto;min-height:40px;padding:6px 8px;gap:6px}
+ .btn{padding:8px 12px;font-size:13px;min-height:36px}
+ .chip{padding:5px 9px;font-size:11px}
+ select.chip{width:112px}
+ #statusbar{font-size:11px;padding:0 8px;gap:8px}
+ #statusbar #status{max-width:55%}
  .CodeMirror{font-size:13px}
  #outwrap{font-size:12.5px}
 }
@@ -143,8 +131,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 }
 
 @media (max-width:520px){
-  .btn{min-height:44px}
-  .phead{padding:10px 10px}
+  .btn{min-height:40px}
 }
 </style>
 </head>
@@ -170,23 +157,48 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
   </button>
  </div>
  <div id="main">
-
-  <div class="pane" id="outPane">
-   <div class="phead"><span class="dots"><i></i><i></i><i></i></span><span class="t term">терминал</span><div class="spacer"></div>
+  <div id="work">
+   <div id="activity">
+    <span class="ai on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5a1 1 0 0 1 1-1h5l2 2h7a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg></span>
+    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="5.5"/><path d="M15 15l5 5"/></svg></span>
+    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="6" r="2.4"/><circle cx="7" cy="18" r="2.4"/><circle cx="17" cy="9" r="2.4"/><path d="M7 8.5v7M17 11.5c0 3-3 3.5-6.5 4"/></svg></span>
+    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/><path d="M13 7.5h7M7.5 13v7"/></svg></span>
+    <div class="aflex"></div>
+    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
+   </div>
+   <div id="sidebar">
+    <div class="shead">ПРОВОДНИК</div>
+    <div class="sdir">PYRUN</div>
+    <div class="sfile on"><i class="ficon"></i><span id="treeName">main.py</span></div>
+    <div class="sdir">примеры</div>
+    <div id="treeEx"></div>
+   </div>
+   <div id="editcol">
+    <div id="tabs">
+     <div class="tab on"><i class="ficon"></i><span id="tabName">main.py</span><span class="tx">×</span></div>
+     <div class="spacer"></div>
+     <span class="chip" id="openBtn">открыть</span>
+     <span class="chip" id="saveBtn">скачать</span>
+     <span class="chip" id="clearBtn">очистить</span>
+     <input type="file" id="fileInput" accept=".py,.js,.lua,.rb,.cpp,.cc,.cxx,.h,.hpp,.sql,.txt" hidden>
+    </div>
+    <div id="editorwrap"><textarea id="code"></textarea></div>
+   </div>
+  </div>
+  <div id="panel">
+   <div id="ptabs"><span class="ptab on">терминал</span><div class="spacer"></div>
     <span class="chip" id="copyOutBtn">копировать</span>
     <span class="chip" id="clearOutBtn">очистить вывод</span>
    </div>
-   <div id="codebar"><span class="t">код</span><div class="spacer"></div>
-    <span class="chip" id="openBtn">открыть</span>
-    <span class="chip" id="saveBtn">скачать</span>
-    <span class="chip" id="clearBtn">очистить</span>
-    <input type="file" id="fileInput" accept=".py,.js,.lua,.rb,.cpp,.cc,.cxx,.h,.hpp,.sql,.txt" hidden>
-   </div>
-   <div id="editorwrap"><textarea id="code"></textarea></div>
-   <div id="outbar"><span class="t">вывод</span><div class="spacer"></div></div>
    <div id="outwrap"></div>
    <div id="inline" style="display:none"><span class="p">›</span><input id="inField" autocomplete="off" spellcheck="false" placeholder="ввод для программы"></div>
   </div>
+ </div>
+ <div id="statusbar">
+  <div id="status"><span class="dot"></span><span id="statusText"></span></div>
+  <div class="spacer"></div>
+  <span id="sbPos">Стр 1, Кол 1</span>
+  <span id="sbLang">Python</span>
  </div>
 </div>
 
@@ -290,8 +302,16 @@ function curExamples() {
 }
 function fillExamples() {
   sel.innerHTML = '<option value="">Примеры</option>';
+  const treeEx = document.getElementById('treeEx');
+  if (treeEx) treeEx.innerHTML = '';
   for (const k of Object.keys(curExamples())) {
     const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o);
+    if (treeEx) {
+      const d = document.createElement('div');
+      d.className = 'sfile ex'; d.textContent = k;
+      d.onclick = () => { const ex = curExamples(); if (ex[k]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[k]); editor.focus(); } };
+      treeEx.appendChild(d);
+    }
   }
 }
 fillExamples();
@@ -309,6 +329,8 @@ const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
   extraKeys: {'Ctrl-Enter': run, 'Cmd-Enter': run, 'Shift-Enter': run, 'Ctrl-Space': 'autocomplete'}
 });
 new CodemirrorBinding(ycode, editor);
+const sbPos = document.getElementById('sbPos');
+editor.on('cursorActivity', () => { const c = editor.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
 
 const isRoom = location.hash.startsWith('#room=');
 if (!isRoom) {
@@ -631,6 +653,8 @@ ymeta.observe(() => {
 });
 function setLang(l, sync) {
   lang = l;
+  const fn = 'main.' + LANGS[l].ext;
+  try { document.getElementById('tabName').textContent = fn; document.getElementById('treeName').textContent = fn; document.getElementById('sbLang').textContent = LANGS[l].label; } catch(e) {}
   langSel.value = l;
   editor.setOption('mode', LANGS[l].mode);
   fillExamples();
