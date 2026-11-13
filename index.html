@@ -236,7 +236,7 @@ import { WebsocketProvider } from 'https://esm.sh/y-websocket@1.5.4?deps=yjs@13.
 import { CodemirrorBinding } from 'https://esm.sh/y-codemirror@2.0.2?deps=yjs@13.6.18&external=codemirror';
 
 const EXAMPLES = {
- "Чтение файла": "# слева в «Проекте» лежит data.txt — читаем и разбираем его\nwith open('data.txt', encoding='utf-8') as f:\n    summa = 0\n    for line in f:\n        line = line.strip()\n        if not line or ',' not in line:\n            continue\n        imya, ball = [x.strip() for x in line.split(',')]\n        ball = int(ball)\n        print(imya, ball)\n        summa += ball\n\nprint('сумма баллов:', summa)\n",
+ "Чтение файла": "# слева в «Проекте» лежит data.txt — читаем и разбираем его\nwith open('data.txt', encoding='utf-8') as f:\n    summa = 0\n    for line in f:\n        line = line.strip()\n        if not line or ',' not in line:\n            continue\n        imya, ball = [x.strip() for x in line.split(',')]\n        if imya == 'имя':\n            continue\n        ball = int(ball)\n        print(imya, ball)\n        summa += ball\n\nprint('сумма баллов:', summa)\n",
  "Привет, мир": 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}!")',
  "Числа Фибоначчи": "def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        print(a, end=' ')\n        a, b = b, a + b\n    print()\n\nfib(15)",
  "Списки и срезы": "nums = [8, 3, 15, 1, 42, 7]\nprint(\"было:\", nums)\nnums.sort()\nprint(\"стало:\", nums)\nprint(\"топ-3:\", nums[-3:])",
