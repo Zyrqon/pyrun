@@ -66,7 +66,6 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 #outwrap .dim{color:var(--dim)}
 #outwrap .ok{color:var(--green)}
 #outwrap img.plot{max-width:100%;background:#fff;border-radius:10px;margin:8px 0;display:block;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-#outwrap:empty::before{content:"Результат появится здесь";color:var(--dim);font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13.5px}
 
 #load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);z-index:50;transition:opacity .4s;padding:24px;text-align:center}
 #load.hidden{opacity:0;pointer-events:none}
@@ -133,7 +132,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 <body>
 <div id="app">
  <div id="top">
-  <div class="logo"><span class="badge">Py</span>PyRun<span class="sub">10 языков в браузере</span></div>
+  <div class="logo"><span class="badge">Py</span>PyRun</div>
   <div class="spacer"></div>
   <select id="langSel" class="chip" title="Язык программирования"><optgroup label="Python"><option value="python314">Python 3.14</option><option value="python313">Python 3.13</option><option value="python">Python 3.12</option><option value="python311">Python 3.11</option><option value="python310">Python 3.10</option></optgroup><option value="javascript">JavaScript</option><option value="lua">Lua</option><option value="ruby">Ruby</option><option value="cpp">C++</option><option value="sql">SQL</option></select>
   <select id="examples" class="chip"><option value="">Примеры</option></select>
@@ -146,7 +145,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
   <button class="btn ghost" id="shareBtn" title="Скопировать ссылку с кодом">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Ссылка
   </button>
-  <div id="status"><span class="dot"></span><span id="statusText">стартуем</span></div>
+  <div id="status"><span class="dot"></span><span id="statusText"></span></div>
   <button class="btn" id="runBtn" disabled>
    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Запустить
   </button>
@@ -174,7 +173,6 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 <div id="load">
  <div class="badge">Py</div>
  <h1>PyRun</h1>
- <p>Код запускается прямо в браузере. Первый запуск подкачает движок языка, дальше всё летает.</p>
  <div class="bar"><i id="bar"></i></div>
  <p id="loadpct" style="font-size:12.5px">загружаю</p>
 </div>
