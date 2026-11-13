@@ -462,6 +462,7 @@ function swapPanes(n) {
   else { editor2.swapDoc(docForSplit(prev)); editor2.setOption('mode', modeFor(prev)); }
   splitTab = prev;
   document.getElementById('splitName').textContent = prev === 'main' ? fileLabel() : prev;
+  setTimeout(function () { try { editor.refresh(); editor2.refresh(); } catch (eR2) {} }, 0);
   try { localStorage.setItem('pyrun_split', prev); } catch (eS4) {}
   renderTabs(); renderTree();
 }
@@ -497,6 +498,7 @@ function showInRight(n) {
   else { editor2.swapDoc(docForSplit(n)); editor2.setOption('mode', modeFor(n)); }
   document.getElementById('splitName').textContent = n === 'main' ? fileLabel() : n;
   document.getElementById('paneR').style.display = 'flex';
+  setTimeout(function () { try { editor2.refresh(); } catch (eR0) {} }, 0);
   try { localStorage.setItem('pyrun_split', n); } catch (eS2) {}
   renderTabs(); renderTree();
 }
@@ -506,6 +508,7 @@ function closeSplit() {
   if (was === 'main') { unbindCode(); binding = null; }
   document.getElementById('paneR').style.display = 'none';
   if (activeTab === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
+  setTimeout(function () { try { editor.refresh(); } catch (eR1) {} }, 0);
   renderTabs(); renderTree();
 }
 function toggleSplit(n) {
