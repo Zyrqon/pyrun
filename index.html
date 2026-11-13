@@ -837,7 +837,7 @@ function println(text, cls) {
 }
 
 let pv = 0;
-const pTimer = setInterval(() => { pv = Math.min(92, pv + 2); bar.style.width = pv + '%'; loadpct.textContent = pv + '%'; }, 350);
+const pTimer = setInterval(() => { pv = Math.min(92, pv + 2); bar.style.width = pv + '%'; loadpct.textContent = 'загружаю'; }, 350);
 
 async function boot() {
   try {
@@ -863,7 +863,7 @@ async function boot() {
     figsFn = py.globals.get('_pyrun_figs');
     figsFns.python = figsFn;
     clearInterval(pTimer);
-    bar.style.width = '100%'; loadpct.textContent = '100%';
+    bar.style.width = '100%';
     pyVersion = py.runPython('import sys\nsys.version.split()[0]').toString();
     pyVers.python = pyVersion;
     document.getElementById('load').classList.add('hidden');
