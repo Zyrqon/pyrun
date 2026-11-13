@@ -959,6 +959,8 @@ async function run(debugMode) {
   stdinAbortPy = isPy(lang);
   stdinPaused = false;
   stdinBuf = stdinHistory.slice();
+  yout.delete(0, yout.length);
+  yfigs.delete(0, yfigs.length);
   println('запуск' + (room ? ' — ' + myName : '') + (debugMode ? ' (отладка)' : ''), 'dim');
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
