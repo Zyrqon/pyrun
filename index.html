@@ -616,7 +616,7 @@ function loadTicker() {
   return setInterval(() => {
     pv = Math.min(92, pv + 2);
     bar.style.width = pv + '%';
-    loadpct.textContent = curLoadMsg + ' ' + Math.round(pv) + '%';
+    loadpct.textContent = curLoadMsg;
   }, 400);
 }
 let curLoadMsg = '';
@@ -654,7 +654,7 @@ const LUA_SHIM = "io.write = function(...) local t = {} for i, v in ipairs({...}
 
 async function ensurePy(l) {
   if (pys[l]) return pys[l];
-  curLoadMsg = 'загружаю ' + LANGS[l].label;
+  curLoadMsg = 'загружаю';
   showLoad(curLoadMsg);
   const tick = loadTicker();
   try {
@@ -686,7 +686,7 @@ function ensurePyBg(l) {
 }
 async function ensureLua() {
   if (luaEng) return luaEng;
-  curLoadMsg = 'загружаю Lua';
+  curLoadMsg = 'загружаю';
   showLoad(curLoadMsg);
   const tick = loadTicker();
   try {
@@ -708,7 +708,7 @@ async function ensureLua() {
 }
 async function ensureRuby() {
   if (rubyVM) return rubyVM;
-  curLoadMsg = 'загружаю Ruby (файл большой, это до минуты)';
+  curLoadMsg = 'загружаю';
   showLoad(curLoadMsg);
   const tick = loadTicker();
   try {
@@ -735,7 +735,7 @@ async function ensureRuby() {
 }
 async function ensureCpp() {
   if (JSCPPref) return JSCPPref;
-  curLoadMsg = 'загружаю интерпретатор C++';
+  curLoadMsg = 'загружаю';
   showLoad(curLoadMsg);
   const tick = loadTicker();
   try {
@@ -757,7 +757,7 @@ async function ensureCpp() {
 }
 async function ensureSql() {
   if (SQLC) return SQLC;
-  curLoadMsg = 'загружаю SQLite';
+  curLoadMsg = 'загружаю';
   showLoad(curLoadMsg);
   const tick = loadTicker();
   try {
