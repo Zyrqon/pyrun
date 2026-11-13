@@ -148,7 +148,8 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px
 .mi:hover i{color:#dfe6f5}
 #editorwrap{display:flex}
 #editorwrap .pane{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
-#editorwrap .pane .CodeMirror{flex:1;height:auto;position:absolute;inset:0}
+#paneL .CodeMirror{position:absolute;inset:0}
+#paneR .CodeMirror{position:absolute;top:24px;left:0;right:0;bottom:0}
 #paneR{border-left:1px solid #4b4f52}
 .phead{display:flex;align-items:center;justify-content:space-between;padding:0 8px;height:24px;flex:none;font-size:11px;color:#808080;background:#313335;border-bottom:1px solid #4b4f52}
 .phead-x{cursor:pointer;padding:0 5px;font-size:13px}
@@ -390,7 +391,8 @@ function unbindCode() { if (binding) { try { binding.destroy(); } catch (eB) {} 
 const sbPos = document.getElementById('sbPos');
 editor.on('cursorActivity', () => { const c = editor.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
 const editor2 = CodeMirror.fromTextArea(document.getElementById('code2'), {
-  lineNumbers: true, matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
+  mode: 'python', theme: 'darcula', lineNumbers: true, indentUnit: 4,
+  matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
   extraKeys: {'Ctrl-Enter': () => run(false), 'Cmd-Enter': () => run(false), 'Shift-Enter': () => run(false), 'Ctrl-Space': 'autocomplete'}
 });
 editor2.on('cursorActivity', () => { const c = editor2.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
