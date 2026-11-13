@@ -79,6 +79,10 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
 #outwrap .dim{color:var(--dim)}
 #outwrap .ok{color:var(--green)}
 #outwrap img.plot{max-width:100%;background:#fff;border-radius:10px;margin:8px 0;display:block;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#inline{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line);flex:none;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#d8e2ee}
+#inline .p{color:var(--green);flex:none}
+#inline input{flex:1;background:none;border:none;outline:none;color:inherit;font:inherit;caret-color:var(--green)}
+#inline input::placeholder{color:var(--dim)}
 #outwrap::after{content:"▏";display:inline-block;color:#5bd08d;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 
@@ -181,6 +185,7 @@ li.CodeMirror-hint-active{background:rgba(110,168,255,.18);color:#fff}
    <div id="editorwrap"><textarea id="code"></textarea></div>
    <div id="outbar"><span class="t">вывод</span><div class="spacer"></div></div>
    <div id="outwrap"></div>
+   <div id="inline" style="display:none"><span class="p">›</span><input id="inField" autocomplete="off" spellcheck="false" placeholder="ввод для программы"></div>
   </div>
  </div>
 </div>
@@ -317,6 +322,24 @@ if (!isRoom) {
 editor.on('change', () => { if (!room) { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} } });
 
 const out = document.getElementById('outwrap');
+let stdinQueue = [], stdinBuf = [], needInput = false;
+const inlineBox = document.getElementById('inline'), inField = document.getElementById('inField');
+const NEED_RE = /\binput\s*\(|\bio\.read\s*\(|\bcin\s*>>|\bprompt\s*\(/;
+function stdinShift(){
+  const v = stdinBuf.shift();
+  if (v !== undefined) { println('› ' + v, 'dim'); return v; }
+  needInput = true;
+  inlineBox.style.display = 'flex';
+  println('нужен ещё ввод: пиши в строке ниже и запусти снова', 'dim');
+  return null;
+}
+inField.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const v = inField.value; inField.value = '';
+  if (v.trim() !== '') stdinQueue.push(v);
+  if (needInput && stdinQueue.length) { needInput = false; inlineBox.style.display = 'none'; runBtn.click(); }
+});
 const bar = document.getElementById('bar'), loadpct = document.getElementById('loadpct');
 const status = document.getElementById('status'), statusText = document.getElementById('statusText');
 const runBtn = document.getElementById('runBtn');
@@ -395,7 +418,7 @@ async function ensurePy(l) {
       stdout: (s) => println(s),
       stderr: (s) => println(s, 'err')
     });
-    try { p.setStdin({ stdin: () => (prompt('input() ждёт ввода:') ?? '') + '\n' }); } catch (e0) {}
+    try { p.setStdin({ stdin: () => (stdinShift() ?? '') + '\n' }); } catch (e0) {}
     p.runPython(FIGS_PY);
     try { figsFns[l] = p.globals.get('_pyrun_figs'); } catch (e0b) {}
     pyVers[l] = p.runPython('import sys\nsys.version.split()[0]').toString();
@@ -425,7 +448,7 @@ async function ensureLua() {
     const factory = new m.LuaFactory('https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/dist/glue.wasm');
     luaEng = await factory.createEngine();
     luaEng.global.set('pyrun_out', (s) => lineW('lua', String(s)));
-    luaEng.global.set('pyrun_in', () => (prompt('io.read ждёт ввода:') ?? ''));
+    luaEng.global.set('pyrun_in', () => stdinShift() ?? '');
     await luaEng.doString(LUA_SHIM);
   } catch (e) {
     clearInterval(tick);
@@ -562,7 +585,7 @@ async function boot() {
       stdout: (s) => println(s),
       stderr: (s) => println(s, 'err')
     });
-    py.setStdin({ stdin: () => (prompt('input() ждёт ввода:') ?? '') + '\n' });
+    py.setStdin({ stdin: () => (stdinShift() ?? '') + '\n' });
     py.runPython(
 'import io, base64, sys\n' +
 'def _pyrun_figs():\n' +
@@ -623,18 +646,28 @@ if (lang !== 'python') setLang(lang);
 
 async function run() {
   if (running) return;
+  const code = ycode.toString();
+  const codeNoCmt = code.split('\n').filter(l => !/^\s*(#|\/\/|--)/.test(l)).join('\n');
+  if (NEED_RE.test(codeNoCmt) && !stdinQueue.length && inlineBox.style.display === 'none') {
+    needInput = true;
+    inlineBox.style.display = 'flex';
+    inField.focus();
+    println('программа ждёт ввод: пиши строки ниже, Enter добавляет, потом Запустить', 'dim');
+    return;
+  }
   if (isPy(lang) && !pys[lang]) {
     try { await ensurePy(lang); } catch (e) { return; }
   }
   running = true;
   runBtn.disabled = true;
   const t0 = performance.now();
+  inlineBox.style.display = 'none';
+  stdinBuf = stdinQueue.slice(); stdinQueue.length = 0;
   yout.delete(0, yout.length);
   yfigs.delete(0, yfigs.length);
   println('запуск' + (room ? ' — ' + myName : ''), 'dim');
   if (room) ymeta.set('running', { by: myName, t: Date.now() });
   try {
-    const code = ycode.toString();
     if (isPy(lang)) {
     statusText.textContent = 'подгружаю пакеты';
     await pys[lang].loadPackagesFromImports(code, { messageCallback: (m) => { statusText.textContent = String(m).slice(0, 60); } });
@@ -661,9 +694,9 @@ async function run() {
           };
         }
         let f;
-        try { f = new (Object.getPrototypeOf(async function(){}).constructor)(code); }
+        try { f = new (Object.getPrototypeOf(async function(){}).constructor)('prompt', code); }
         catch (e4) { println(String(e4), 'err'); resolve(); return; }
-        f().then((r) => { if (r !== undefined) println(String(r), 'ok'); resolve(); })
+        f((s5) => stdinShift() ?? '').then((r) => { if (r !== undefined) println(String(r), 'ok'); resolve(); })
            .catch((e5) => { println(String(e5 && e5.stack ? e5.stack : e5), 'err'); resolve(); })
            .finally(() => { for (const m of ['log', 'info', 'warn', 'error']) console[m] = orig[m]; });
       });
@@ -685,7 +718,7 @@ async function run() {
       statusText.textContent = 'выполняю';
       lineReset('cpp');
       try {
-        const ec = J.run(code, '', { stdio: { write: (s) => lineW('cpp', String(s)), drain: () => (prompt('cin ждёт ввода:') ?? '') + '\n' } });
+        const ec = J.run(code, '', { stdio: { write: (s) => lineW('cpp', String(s)), drain: () => (stdinShift() ?? '') + '\n' } });
         if (ec !== undefined && ec !== 0) println('код выхода: ' + ec, 'dim');
       } catch (e8) { println('C++: ' + String(e8 && e8.message ? e8.message : e8), 'err'); }
       lineFlush('cpp');
