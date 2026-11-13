@@ -569,7 +569,7 @@ if (!isRoom) {
 editor.on('change', () => { if (!room && activeTab === 'main') { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} } });
 
 const out = document.getElementById('outwrap');
-let stdinQueue = [], stdinBuf = [], needInput = false;
+let stdinHistory = [], stdinBuf = [], needInput = false, stdinAbortPy = false;
 const inlineBox = document.getElementById('inline'), inField = document.getElementById('inField');
 const NEED_RE = /\binput\s*\(|\bio\.read\s*\(|\bcin\s*>>|\bprompt\s*\(/;
 function stdinShift(){
@@ -577,15 +577,17 @@ function stdinShift(){
   if (v !== undefined) { println('› ' + v, 'dim'); return v; }
   needInput = true;
   inlineBox.style.display = 'flex';
+  inField.focus();
   println('нужен ещё ввод: пиши в строке ниже и запусти снова', 'dim');
+  if (stdinAbortPy) throw new Error('PYRUN_NEED_INPUT');
   return null;
 }
 inField.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter') return;
   e.preventDefault();
   const v = inField.value; inField.value = '';
-  if (v.trim() !== '') stdinQueue.push(v);
-  if (needInput && stdinQueue.length) { needInput = false; inlineBox.style.display = 'none'; runBtn.click(); }
+  if (v.trim() !== '') stdinHistory.push(v);
+  if (needInput && stdinHistory.length) { needInput = false; inlineBox.style.display = 'none'; runBtn.click(); }
 });
 const bar = document.getElementById('bar'), loadpct = document.getElementById('loadpct');
 const status = document.getElementById('status'), statusText = document.getElementById('statusText');
@@ -915,7 +917,7 @@ async function run(debugMode) {
   let code = ycode.toString();
   if (!room && activeTab !== 'main' && files[activeTab] !== undefined && extOf(activeTab) === LANGS[lang].ext) code = files[activeTab];
   const codeNoCmt = code.split('\n').filter(l => !/^\s*(#|\/\/|--)/.test(l)).join('\n');
-  if (NEED_RE.test(codeNoCmt) && !stdinQueue.length && inlineBox.style.display === 'none') {
+  if (NEED_RE.test(codeNoCmt) && !stdinHistory.length && inlineBox.style.display === 'none') {
     needInput = true;
     inlineBox.style.display = 'flex';
     inField.focus();
@@ -930,7 +932,8 @@ async function run(debugMode) {
   try { if (isPy(lang)) for (const n of Object.keys(files)) { try { pys[lang].FS.writeFile('/home/pyodide/' + n, files[n]); } catch (eF1) {} } } catch (eF0) {}
   const t0 = performance.now();
   inlineBox.style.display = 'none';
-  stdinBuf = stdinQueue.slice(); stdinQueue.length = 0;
+  stdinAbortPy = isPy(lang);
+  stdinBuf = stdinHistory.slice();
   yout.delete(0, yout.length);
   yfigs.delete(0, yfigs.length);
   println('запуск' + (room ? ' — ' + myName : '') + (debugMode ? ' (отладка)' : ''), 'dim');
@@ -1003,7 +1006,8 @@ async function run(debugMode) {
     }
     println('готово за ' + Math.round(performance.now() - t0) + ' мс', 'dim');
   } catch (e) {
-    println(String(e).split('\n').filter(l => l).join('\n'), 'err');
+    if (String(e).includes('PYRUN_NEED_INPUT')) { }
+    else println(String(e).split('\n').filter(l => l).join('\n'), 'err');
   }
   if (room) ymeta.set('running', null);
   running = false;
@@ -1158,7 +1162,7 @@ function doMenu(act) {
   else if (act === 'clearout') document.getElementById('clearOutBtn').click();
   else if (act === 'about') flash('PyRun — онлайн-компилятор: Python, JavaScript, Lua, Ruby, C++, SQL');
 }
-document.getElementById('clearOutBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); };
+document.getElementById('clearOutBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); stdinHistory.length = 0; stdinBuf.length = 0; };
 document.getElementById('clearBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } if (activeTab === 'main') { ycode.delete(0, ycode.length); } else { extraDocs[activeTab].setValue(''); } editor.focus(); };
 document.getElementById('copyOutBtn').onclick = (e) => {
   navigator.clipboard.writeText(out.innerText).then(() => popCopy(e.currentTarget), () => flash('не удалось скопировать'));
