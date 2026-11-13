@@ -465,14 +465,18 @@ function swapPanes(n) {
   renderTabs(); renderTree();
 }
 function openFile(n) {
-  if (splitTab === n) swapPanes(n);
+  let swapped = false;
+  if (splitTab === n) { swapPanes(n); swapped = true; }
   activeTab = n;
   if (!openTabs.includes(n)) openTabs.push(n);
-  if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
-  else {
+  if (n === 'main') {
+    if (!swapped) editor.swapDoc(mainDoc);
+    editor.setOption('mode', LANGS[lang].mode);
+    bindMain();
+  } else {
     if (binding && binding.editor === editor) unbindCode();
     if (!extraDocs[n]) { extraDocs[n] = CodeMirror.Doc(files[n] || '', modeFor(n)); extraDocs[n].on('change', () => { files[n] = extraDocs[n].getValue(); saveFiles(); }); }
-    editor.swapDoc(extraDocs[n]);
+    if (!swapped) editor.swapDoc(extraDocs[n]);
     editor.setOption('mode', modeFor(n));
   }
   editor.focus();
