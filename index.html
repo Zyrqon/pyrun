@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0d10">
+<meta name="theme-color" content="#2b2b2b">
 <title>PyRun — онлайн компилятор: Python, JavaScript, Lua, Ruby, C++, SQL</title>
 <meta name="description" content="Бесплатный онлайн-компилятор: Python 3.10–3.14, JavaScript, Lua, Ruby, C++ и SQL прямо в браузере без установки. Подсветка синтаксиса, подсказки, совместное редактирование, графики matplotlib, NumPy и pandas.">
 <meta name="robots" content="index,follow">
@@ -16,21 +16,23 @@
 {"@context":"https://schema.org","@type":"WebApplication","name":"PyRun","url":"https://zyrqon.github.io/pyrun/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"Онлайн-компилятор: Python 3.10-3.14, JavaScript, Lua, Ruby, C++ и SQL прямо в браузере, подсветка синтаксиса, совместное редактирование, matplotlib, NumPy и pandas."}
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/darcula.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 <style>
-:root{--bg:#1e1e1e;--card:#252526;--card2:#2d2d2d;--line:#3c3c3c;--text:#cccccc;--dim:#858585;--accent:#3794ff;--green:#3fb950;--red:#f48771}
+:root{--bg:#2b2b2b;--card:#3c3f41;--card2:#313335;--line:#4b4f52;--text:#bbbbbb;--dim:#808080;--accent:#589df6;--green:#499c54;--red:#ff6b68}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
 html,body{height:100%}
 body{background:var(--bg);color:var(--text);font:13px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 
 #app{position:fixed;inset:0;display:flex;flex-direction:column}
-#top{display:flex;align-items:center;gap:8px;padding:0 12px;height:40px;flex:none;overflow-x:auto;scrollbar-width:none;background:#3c3c3c}
+#top{display:flex;align-items:center;gap:8px;padding:0 12px;height:40px;flex:none;overflow-x:auto;scrollbar-width:none;background:#4b4f52}
 #top .logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:#fff}
-#top .logo .badge{width:22px;height:22px;display:grid;place-items:center;border-radius:5px;font-size:10.5px;font-weight:800;color:#fff;background:#0e639c}
+#top .logo .badge{width:22px;height:22px;display:grid;place-items:center;border-radius:5px;font-size:10.5px;font-weight:800;color:#fff;background:#365d80}
 #top .spacer{flex:1}
-.btn{display:inline-flex;align-items:center;gap:8px;background:#0e639c;color:#fff;border:none;border-radius:4px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:filter .12s;white-space:nowrap;min-height:32px}
-.btn.ghost{background:transparent;color:#e7e7e7;border:none}
+.btn{display:inline-flex;align-items:center;gap:8px;background:#499c54;color:#fff;border:none;border-radius:4px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:filter .12s;white-space:nowrap;min-height:32px}
+.btn.ghost{background:transparent;color:#bbbbbb;border:none}
 .btn:hover{filter:brightness(1.1)}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:default;filter:none}
@@ -42,40 +44,46 @@ body{background:var(--bg);color:var(--text);font:13px/1.5 "Segoe UI",-apple-syst
 
 #main{flex:1;display:flex;flex-direction:column;min-height:0}
 #work{flex:1;display:flex;min-height:0}
-#activity{width:44px;flex:none;background:#333333;display:flex;flex-direction:column;align-items:center;padding:6px 0}
-#activity .ai{width:44px;height:44px;display:grid;place-items:center;color:#858585;cursor:default}
+#activity{width:44px;flex:none;background:#3c3f41;display:flex;flex-direction:column;align-items:center;padding:6px 0}
+#activity .ai{width:44px;height:44px;display:grid;place-items:center;color:#808080;cursor:default}
 #activity .ai svg{width:22px;height:22px}
 #activity .ai.on{color:#fff;box-shadow:inset 2px 0 0 #fff}
 #activity .aflex{flex:1}
-#sidebar{width:200px;flex:none;background:#252526;border-right:1px solid #2b2b2b;overflow:auto;padding:4px 0;font-size:12.5px}
-#sidebar .shead{padding:6px 16px;color:#bbbbbb;font-size:11px;letter-spacing:.08em}
-#sidebar .sdir{padding:4px 16px;color:#cccccc;font-weight:600}
-#sidebar .sfile{display:flex;align-items:center;gap:7px;padding:3px 16px 3px 28px;color:#cccccc;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#sidebar .sfile:hover{background:#2a2d2e}
-#sidebar .sfile.on{background:#37373d;color:#fff}
-#sidebar .sfile.ex{padding-left:42px;color:#a9a9a9}
+#sidebar{width:220px;flex:none;background:#3c3f41;border-right:1px solid #2b2b2b;overflow:auto;padding:0 0 8px;font-size:12.5px}
+#sidebar .shead{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px 14px;color:#bbbbbb;font-size:12px;font-weight:600}
+#sidebar .sact{cursor:pointer;color:#808080;font-size:15px;padding:0 6px;border-radius:3px;flex:none}
+#sidebar .sact:hover{background:#4b4f52;color:#bbbbbb}
+.sroot{padding:4px 12px;color:#a9b7c6;font-weight:600;font-size:12.5px;cursor:default;white-space:nowrap}
+#sidebar .sfile{display:flex;align-items:center;gap:6px;padding:2px 12px 2px 26px;color:#a9b7c6;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;padding-right:24px}
+#sidebar .sfile:hover{background:#43454a}
+#sidebar .sfile.on{background:#4b6eaf;color:#fff}
+#sidebar .sfile.ex{padding-left:40px;color:#808080}
+#sidebar .sfile .fx{position:absolute;right:6px;color:#808080;cursor:pointer;display:none;padding:0 2px}
+#sidebar .sfile:hover .fx{display:block}
+#sidebar .sfile .fx:hover{color:#fff}
+.fico{font-style:normal;font-size:10px;font-weight:700;width:25px;flex:none;opacity:.9;font-family:'JetBrains Mono',monospace}
 .ficon{width:11px;height:13px;border:1px solid currentColor;border-radius:1px;opacity:.65;flex:none}
-#editcol{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:#1e1e1e}
-#tabs{display:flex;align-items:center;height:35px;flex:none;background:#252526;border-bottom:1px solid #1e1e1e;gap:4px;overflow-x:auto;scrollbar-width:none}
+#editcol{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:#2b2b2b}
+#tabs{display:flex;align-items:center;height:35px;flex:none;background:#3c3f41;border-bottom:1px solid #2b2b2b;gap:4px;overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-#tabs .tab{display:flex;align-items:center;gap:8px;height:35px;padding:0 10px 0 12px;background:#2d2d2d;color:#969696;font-size:13px;border-right:1px solid #252526;box-shadow:inset 0 1px 0 #3c3c3c;flex:none}
-#tabs .tab.on{background:#1e1e1e;color:#fff;box-shadow:inset 0 1px 0 #007acc}
-#tabs .tx{color:#6e6e6e;cursor:pointer}
+#tabs .tab{display:flex;align-items:center;gap:8px;height:35px;padding:0 10px 0 12px;background:#3c3f41;color:#808080;font-size:13px;border-right:1px solid #2b2b2b;box-shadow:none;flex:none}
+#tabs .tab.on{background:#2b2b2b;color:#e8e8e8;box-shadow:inset 0 2px 0 #589df6}
+#tabs .tx{color:#808080;cursor:pointer}
 #tabs .spacer{flex:1}
 #tabs .chip{margin-right:5px}
 #editorwrap{flex:1;min-height:0;position:relative}
-#panel{height:40%;min-height:150px;flex:none;display:flex;flex-direction:column;border-top:1px solid #3c3c3c;background:#1e1e1e}
-#ptabs{display:flex;align-items:center;gap:16px;height:35px;flex:none;padding:0 10px 0 14px;border-bottom:1px solid #3c3c3c}
-#ptabs .ptab{font-size:11px;letter-spacing:.07em;color:#858585;text-transform:uppercase;height:100%;display:flex;align-items:center;cursor:pointer}
-#ptabs .ptab.on{color:#e7e7e7;box-shadow:inset 0 1px 0 #007acc}
+#panel{height:40%;min-height:150px;flex:none;display:flex;flex-direction:column;border-top:1px solid #4b4f52;background:#2b2b2b}
+#ptabs{display:flex;align-items:center;gap:16px;height:35px;flex:none;padding:0 10px 0 14px;border-bottom:1px solid #4b4f52}
+#ptabs .ptab{font-size:11px;letter-spacing:.07em;color:#808080;text-transform:uppercase;height:100%;display:flex;align-items:center;cursor:pointer}
+#ptabs .ptab.on{color:#e8e8e8;box-shadow:inset 0 1px 0 #589df6}
 #ptabs .spacer{flex:1}
-#statusbar{height:24px;flex:none;background:#007acc;color:#fff;display:flex;align-items:center;gap:14px;padding:0 12px;font-size:12px;flex-wrap:nowrap;overflow:hidden}
+#statusbar{height:24px;flex:none;background:#3c3f41;color:#fff;display:flex;align-items:center;gap:14px;padding:0 12px;font-size:12px;flex-wrap:nowrap;overflow:hidden}
 #statusbar .spacer{flex:1}
 #statusbar #status{color:#fff;flex:none;max-width:60%}
 #sbPos,#sbLang{white-space:nowrap;flex:none}
-.chip{font-size:11px;color:#a9a9a9;border:1px solid var(--line);border-radius:3px;padding:3px 9px;background:transparent;cursor:pointer;white-space:nowrap;flex:none;min-height:24px}
+.chip{font-size:11px;color:#808080;border:1px solid var(--line);border-radius:3px;padding:3px 9px;background:transparent;cursor:pointer;white-space:nowrap;flex:none;min-height:24px}
 .chip:hover{color:var(--text)}
-select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background:#2d2d2d;border-radius:3px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+select.chip{appearance:auto;-webkit-appearance:none;color:#bbbbbb;font-size:12px;padding:4px 22px 4px 11px;width:150px;flex:none;background:#313335;border-radius:3px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238d97a5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 #load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);z-index:50;transition:opacity .4s;padding:24px;text-align:center}
 #load.hidden{opacity:0;pointer-events:none}
 #load .badge{width:72px;height:72px;display:grid;place-items:center;border-radius:20px;font-size:26px;font-weight:800;color:var(--accent);background:linear-gradient(160deg,rgba(110,168,255,.25),rgba(110,168,255,.05));border:1px solid rgba(110,168,255,.3);animation:pulse 1.6s ease-in-out infinite}
@@ -86,7 +94,7 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
 #load .bar i{display:block;height:100%;width:8%;border-radius:99px;background:linear-gradient(90deg,#6ea8ff,#8c6eff);transition:width .5s}
 
 @media(max-width:760px){
- #activity,#sidebar{display:none}
+ #sidebar{display:none}
  #panel{height:45%;min-height:120px}
  #top{height:auto;min-height:40px;padding:6px 8px;gap:6px}
  .btn{padding:8px 12px;font-size:13px;min-height:36px}
@@ -122,6 +130,14 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
 .seg button{background:transparent;border:0;color:var(--dim);font:600 11.5px -apple-system,BlinkMacSystemFont,sans-serif;padding:4px 9px;cursor:pointer}
 .seg button.on{background:rgba(110,168,255,.22);color:#fff}
 .peernote{color:var(--dim);font-size:12px;margin-top:4px}
+.menu{color:#bbbbbb;font-size:13px;padding:4px 8px;border-radius:4px;cursor:default;white-space:nowrap}
+.menu:hover{background:#4b4f52}
+#inline{flex:none;display:flex;align-items:center;gap:6px;padding:5px 14px 7px;border-top:1px solid #4b4f52;background:#2b2b2b;font-size:13px}
+#inline .p{color:#808080;user-select:none}
+#inline input{flex:1;min-width:60px;background:transparent;border:none;outline:none;color:#a9b7c6;font:inherit;caret-color:#a9b7c6;padding:0}
+#inline input::placeholder{color:#5a5f63}
+.CodeMirror{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace !important}
+#outwrap{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
 </style>
 
 <style id="fo-mobile">
@@ -139,8 +155,8 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
 <div id="app">
  <div id="top">
   <div class="logo"><span class="badge">Py</span>PyRun</div>
+  <span class="menu">Файл</span><span class="menu">Правка</span><span class="menu">Вид</span><span class="menu">Запуск</span><span class="menu">Справка</span>
   <select id="langSel" class="chip" title="Язык программирования"><optgroup label="Python"><option value="python314">Python 3.14</option><option value="python313">Python 3.13</option><option value="python">Python 3.12</option><option value="python311">Python 3.11</option><option value="python310">Python 3.10</option></optgroup><option value="javascript">JavaScript</option><option value="lua">Lua</option><option value="ruby">Ruby</option><option value="cpp">C++</option><option value="sql">SQL</option></select>
-  <select id="examples" class="chip"><option value="">Примеры</option></select>
   <button class="btn ghost" id="roomBtn" title="Совместное редактирование">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7S13.9 16 14.5 19"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.7-.4 4.6 1 5 4.4"/></svg><span>Комната</span>
   </button>
@@ -156,24 +172,15 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
  </div>
  <div id="main">
   <div id="work">
-   <div id="activity">
-    <span class="ai on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5a1 1 0 0 1 1-1h5l2 2h7a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg></span>
-    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="5.5"/><path d="M15 15l5 5"/></svg></span>
-    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="6" r="2.4"/><circle cx="7" cy="18" r="2.4"/><circle cx="17" cy="9" r="2.4"/><path d="M7 8.5v7M17 11.5c0 3-3 3.5-6.5 4"/></svg></span>
-    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/><path d="M13 7.5h7M7.5 13v7"/></svg></span>
-    <div class="aflex"></div>
-    <span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
-   </div>
    <div id="sidebar">
-    <div class="shead">ПРОВОДНИК</div>
-    <div class="sdir">PYRUN</div>
-    <div class="sfile on"><i class="ficon"></i><span id="treeName">main.py</span></div>
-    <div class="sdir">примеры</div>
+    <div class="shead"><span>Проект</span><span class="sact" id="newFileBtn" title="Новый файл">＋</span></div>
+    <div class="sroot">▾ PyRun</div>
+    <div id="treeFiles"></div>
+    <div class="sroot">▾ Примеры</div>
     <div id="treeEx"></div>
    </div>
    <div id="editcol">
     <div id="tabs">
-     <div class="tab on"><i class="ficon"></i><span id="tabName">main.py</span><span class="tx">×</span></div>
      <div class="spacer"></div>
      <span class="chip" id="openBtn">открыть</span>
      <span class="chip" id="saveBtn">скачать</span>
@@ -184,7 +191,7 @@ select.chip{appearance:auto;-webkit-appearance:none;color:#e7e7e7;font-size:12px
    </div>
   </div>
   <div id="panel">
-   <div id="ptabs"><span class="ptab on">терминал</span><div class="spacer"></div>
+   <div id="ptabs"><span class="ptab on">Запуск</span><div class="spacer"></div>
     <span class="chip" id="copyOutBtn">копировать</span>
     <span class="chip" id="clearOutBtn">очистить вывод</span>
    </div>
@@ -229,6 +236,7 @@ import { WebsocketProvider } from 'https://esm.sh/y-websocket@1.5.4?deps=yjs@13.
 import { CodemirrorBinding } from 'https://esm.sh/y-codemirror@2.0.2?deps=yjs@13.6.18&external=codemirror';
 
 const EXAMPLES = {
+ "Чтение файла": "# слева в «Проекте» лежит data.txt — читаем и разбираем его\nwith open('data.txt', encoding='utf-8') as f:\n    summa = 0\n    for line in f:\n        line = line.strip()\n        if not line or ',' not in line:\n            continue\n        imya, ball = [x.strip() for x in line.split(',')]\n        ball = int(ball)\n        print(imya, ball)\n        summa += ball\n\nprint('сумма баллов:', summa)\n",
  "Привет, мир": 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}!")',
  "Числа Фибоначчи": "def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        print(a, end=' ')\n        a, b = b, a + b\n    print()\n\nfib(15)",
  "Списки и срезы": "nums = [8, 3, 15, 1, 42, 7]\nprint(\"было:\", nums)\nnums.sort()\nprint(\"стало:\", nums)\nprint(\"топ-3:\", nums[-3:])",
@@ -274,7 +282,6 @@ const EXAMPLES_SQL = {
  "JOIN": "CREATE TABLE students (id INTEGER, name TEXT);\nCREATE TABLE scores (student_id INTEGER, score INTEGER);\nINSERT INTO students VALUES (1, 'Аня'), (2, 'Боря'), (3, 'Вика');\nINSERT INTO scores VALUES (1, 91), (2, 78), (3, 95);\nSELECT s.name, c.score\nFROM students s\nJOIN scores c ON c.student_id = s.id\nORDER BY c.score DESC;"
 };
 
-const sel = document.getElementById('examples');
 let lang = 'python';
 try { lang = localStorage.getItem('pyrun_lang') || 'python'; } catch(e) {}
 const langSel = document.getElementById('langSel');
@@ -299,17 +306,14 @@ function curExamples() {
   return { javascript: EXAMPLES_JS, lua: EXAMPLES_LUA, ruby: EXAMPLES_RB, cpp: EXAMPLES_CPP, sql: EXAMPLES_SQL }[lang] || EXAMPLES_JS;
 }
 function fillExamples() {
-  sel.innerHTML = '<option value="">Примеры</option>';
   const treeEx = document.getElementById('treeEx');
-  if (treeEx) treeEx.innerHTML = '';
+  if (!treeEx) return;
+  treeEx.innerHTML = '';
   for (const k of Object.keys(curExamples())) {
-    const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o);
-    if (treeEx) {
-      const d = document.createElement('div');
-      d.className = 'sfile ex'; d.textContent = k;
-      d.onclick = () => { const ex = curExamples(); if (ex[k]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[k]); editor.focus(); } };
-      treeEx.appendChild(d);
-    }
+    const d = document.createElement('div');
+    d.className = 'sfile ex'; d.textContent = k;
+    d.onclick = () => { if (activeTab !== 'main') openFile('main'); const ex = curExamples(); if (ex[k]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[k]); editor.focus(); } };
+    treeEx.appendChild(d);
   }
 }
 fillExamples();
@@ -322,13 +326,90 @@ const ymeta = ydoc.getMap('meta');
 const yperm = ydoc.getMap('perm');
 
 const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
-  mode: 'python', theme: 'material-darker', lineNumbers: true, indentUnit: 4,
+  mode: 'python', theme: 'darcula', lineNumbers: true, indentUnit: 4,
   matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: true,
   extraKeys: {'Ctrl-Enter': run, 'Cmd-Enter': run, 'Shift-Enter': run, 'Ctrl-Space': 'autocomplete'}
 });
-new CodemirrorBinding(ycode, editor);
+let binding = new CodemirrorBinding(ycode, editor);
+function bindMain() {
+  const ys = ycode.toString();
+  if (mainDoc.getValue() !== ys) mainDoc.setValue(ys);
+  if (!binding) binding = new CodemirrorBinding(ycode, editor);
+}
+function unbindCode() { if (binding) { try { binding.destroy(); } catch (eB) {} binding = null; } }
+renderTabs(); renderTree();
 const sbPos = document.getElementById('sbPos');
 editor.on('cursorActivity', () => { const c = editor.getCursor(); sbPos.textContent = 'Стр ' + (c.line + 1) + ', Кол ' + (c.ch + 1); });
+
+// ---------- проект: файлы ----------
+const EXT_COLOR = { py: '#ffd866', js: '#f1e05a', lua: '#519aba', rb: '#cc5e5e', cpp: '#f34b7d', cc: '#f34b7d', h: '#f34b7d', sql: '#e38c00', txt: '#a9b7c6', md: '#519aba', csv: '#89b56d', json: '#cbcb41' };
+function extOf(n) { const i = n.lastIndexOf('.'); return i < 0 ? '' : n.slice(i + 1).toLowerCase(); }
+function modeFor(n) { return { py: 'python', js: 'javascript', lua: 'lua', rb: 'ruby', cpp: 'text/x-c++src', cc: 'text/x-c++src', h: 'text/x-c++src', sql: 'sql' }[extOf(n)] || 'null'; }
+let files = {};
+try { files = JSON.parse(localStorage.getItem('pyrun_files') || '{}') || {}; } catch (eF) { files = {}; }
+if (!files['data.txt']) files['data.txt'] = 'имя,балл\nАня,91\nБоря,78\nВика,95\nГоша,83\nДина,88\n';
+function saveFiles() { try { localStorage.setItem('pyrun_files', JSON.stringify(files)); } catch (eF2) {} }
+saveFiles();
+let openTabs = ['main'], activeTab = 'main';
+const extraDocs = {};
+const mainDoc = editor.getDoc();
+function fileLabel() { return 'main.' + LANGS[lang].ext; }
+function iconEl(n) { const i = document.createElement('i'); i.className = 'fico'; const e = extOf(n); i.textContent = e.slice(0, 3); i.style.color = EXT_COLOR[e] || '#a9b7c6'; return i; }
+const tabsEl = document.getElementById('tabs'), tabsSpacer = tabsEl.querySelector('.spacer'), treeFiles = document.getElementById('treeFiles');
+function renderTree() {
+  treeFiles.innerHTML = '';
+  const mk = document.createElement('div'); mk.className = 'sfile' + (activeTab === 'main' ? ' on' : '');
+  mk.appendChild(iconEl(fileLabel()));
+  const ms = document.createElement('span'); ms.textContent = fileLabel(); mk.appendChild(ms);
+  mk.onclick = () => openFile('main');
+  treeFiles.appendChild(mk);
+  for (const n of Object.keys(files)) {
+    const d = document.createElement('div'); d.className = 'sfile' + (activeTab === n ? ' on' : '');
+    d.appendChild(iconEl(n));
+    const sp = document.createElement('span'); sp.textContent = n; d.appendChild(sp);
+    const x = document.createElement('span'); x.className = 'fx'; x.textContent = '×'; x.title = 'удалить файл';
+    x.onclick = (ev) => { ev.stopPropagation(); delete files[n]; delete extraDocs[n]; openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); saveFiles(); renderTree(); renderTabs(); };
+    d.appendChild(x);
+    d.onclick = () => openFile(n);
+    treeFiles.appendChild(d);
+  }
+}
+function renderTabs() {
+  [...tabsEl.querySelectorAll('.tab')].forEach((t) => t.remove());
+  for (const n of openTabs) {
+    const label = n === 'main' ? fileLabel() : n;
+    const d = document.createElement('div'); d.className = 'tab' + (activeTab === n ? ' on' : '');
+    d.appendChild(iconEl(label));
+    const sp = document.createElement('span'); sp.textContent = label; if (n === 'main') sp.id = 'tabName'; d.appendChild(sp);
+    if (n !== 'main') {
+      const x = document.createElement('span'); x.className = 'tx'; x.textContent = '×';
+      x.onclick = (ev) => { ev.stopPropagation(); openTabs = openTabs.filter((t) => t !== n); if (activeTab === n) openFile('main'); else { renderTabs(); renderTree(); } };
+      d.appendChild(x);
+    }
+    d.onclick = () => openFile(n);
+    tabsEl.insertBefore(d, tabsSpacer);
+  }
+}
+function openFile(n) {
+  activeTab = n;
+  if (n === 'main') { editor.swapDoc(mainDoc); editor.setOption('mode', LANGS[lang].mode); bindMain(); }
+  else {
+    unbindCode();
+    if (!extraDocs[n]) { extraDocs[n] = CodeMirror.Doc(files[n] || '', modeFor(n)); extraDocs[n].on('change', () => { files[n] = extraDocs[n].getValue(); saveFiles(); }); }
+    editor.swapDoc(extraDocs[n]);
+    editor.setOption('mode', modeFor(n));
+  }
+  editor.focus();
+  renderTabs(); renderTree();
+}
+document.getElementById('newFileBtn').onclick = () => {
+  const name = prompt('Имя файла (например data.txt)');
+  if (!name) return;
+  const nm = name.trim();
+  if (!nm) return;
+  if (files[nm] !== undefined || nm.startsWith('main.')) { flash('такой файл уже есть'); return; }
+  files[nm] = ''; saveFiles(); openFile(nm);
+};
 
 const isRoom = location.hash.startsWith('#room=');
 if (!isRoom) {
@@ -339,7 +420,7 @@ if (!isRoom) {
   if (!init) init = '# Пиши код и жми Запустить (Ctrl+Enter)\n# Работают input(), NumPy, pandas и matplotlib\n\nimport sys\nprint("Python", sys.version.split()[0])\nprint("Считаем от 1 до 5:", list(range(1, 6)))\n';
   ycode.insert(0, init);
 }
-editor.on('change', () => { if (!room) { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} } });
+editor.on('change', () => { if (!room && activeTab === 'main') { try { localStorage.setItem('pyrun_code', editor.getValue()); } catch(e) {} } });
 
 const out = document.getElementById('outwrap');
 let stdinQueue = [], stdinBuf = [], needInput = false;
@@ -469,6 +550,7 @@ async function ensureLua() {
     luaEng = await factory.createEngine();
     luaEng.global.set('pyrun_out', (s) => lineW('lua', String(s)));
     luaEng.global.set('pyrun_in', () => stdinShift() ?? '');
+    luaEng.global.set('pyrun_read', (nm) => (files[nm] !== undefined ? files[nm] : ''));
     await luaEng.doString(LUA_SHIM);
   } catch (e) {
     clearInterval(tick);
@@ -652,9 +734,10 @@ ymeta.observe(() => {
 function setLang(l, sync) {
   lang = l;
   const fn = 'main.' + LANGS[l].ext;
-  try { document.getElementById('tabName').textContent = fn; document.getElementById('treeName').textContent = fn; document.getElementById('sbLang').textContent = LANGS[l].label; } catch(e) {}
+  try { document.getElementById('sbLang').textContent = LANGS[l].label; } catch(e) {}
   langSel.value = l;
-  editor.setOption('mode', LANGS[l].mode);
+  if (activeTab === 'main') editor.setOption('mode', LANGS[l].mode);
+  try { renderTabs(); renderTree(); } catch (eL) {}
   fillExamples();
   try { localStorage.setItem('pyrun_lang', l); } catch(e) {}
   if (isPy(l)) ensurePyBg(l);
@@ -682,6 +765,7 @@ async function run() {
   }
   running = true;
   runBtn.disabled = true;
+  try { if (isPy(lang)) for (const n of Object.keys(files)) { try { pys[lang].FS.writeFile('/home/pyodide/' + n, files[n]); } catch (eF1) {} } } catch (eF0) {}
   const t0 = performance.now();
   inlineBox.style.display = 'none';
   stdinBuf = stdinQueue.slice(); stdinQueue.length = 0;
@@ -716,9 +800,9 @@ async function run() {
           };
         }
         let f;
-        try { f = new (Object.getPrototypeOf(async function(){}).constructor)('prompt', code); }
+        try { f = new (Object.getPrototypeOf(async function(){}).constructor)('prompt', 'pyrun_read', code); }
         catch (e4) { println(String(e4), 'err'); resolve(); return; }
-        f((s5) => stdinShift() ?? '').then((r) => { if (r !== undefined) println(String(r), 'ok'); resolve(); })
+        f((s5) => stdinShift() ?? '', (n6) => (files[n6] !== undefined ? files[n6] : null)).then((r) => { if (r !== undefined) println(String(r), 'ok'); resolve(); })
            .catch((e5) => { println(String(e5 && e5.stack ? e5.stack : e5), 'err'); resolve(); })
            .finally(() => { for (const m of ['log', 'info', 'warn', 'error']) console[m] = orig[m]; });
       });
@@ -871,27 +955,35 @@ document.addEventListener('click', (e) => { if (peersPop.classList.contains('on'
 
 runBtn.onclick = run;
 document.getElementById('clearOutBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } yout.delete(0, yout.length); yfigs.delete(0, yfigs.length); };
-document.getElementById('clearBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } ycode.delete(0, ycode.length); editor.focus(); };
+document.getElementById('clearBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } if (activeTab === 'main') { ycode.delete(0, ycode.length); } else { extraDocs[activeTab].setValue(''); } editor.focus(); };
 document.getElementById('copyOutBtn').onclick = (e) => {
   navigator.clipboard.writeText(out.innerText).then(() => popCopy(e.currentTarget), () => flash('не удалось скопировать'));
 };
-sel.onchange = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } const ex = curExamples(); if (ex[sel.value]) { ycode.delete(0, ycode.length); ycode.insert(0, ex[sel.value]); editor.focus(); sel.value = ''; } };
 document.getElementById('openBtn').onclick = () => { if (room && !canWrite()) { flash('у тебя только чтение'); return; } document.getElementById('fileInput').click(); };
 document.getElementById('fileInput').onchange = (e) => {
   const f = e.target.files[0];
   if (!f) return;
   const rd = new FileReader();
-  rd.onload = () => { ycode.delete(0, ycode.length); ycode.insert(0, String(rd.result)); flash('открыт ' + f.name); };
+  rd.onload = () => {
+    const txt = String(rd.result);
+    let nm = f.name;
+    if (nm.startsWith('main.')) nm = 'код' + nm.slice(4);
+    if (extraDocs[nm]) extraDocs[nm].setValue(txt);
+    files[nm] = txt; saveFiles(); renderTree(); openFile(nm); flash('добавлен ' + nm);
+  };
   rd.readAsText(f);
   e.target.value = '';
 };
 document.getElementById('saveBtn').onclick = () => {
   const L = LANGS[lang] || { ext: 'txt' };
   const mime = { py: 'text/x-python', js: 'text/javascript', lua: 'text/x-lua', rb: 'text/x-ruby', cpp: 'text/x-c++src', sql: 'application/sql' }[L.ext] || 'text/plain';
-  const blob = new Blob([ycode.toString()], { type: mime });
+  let name, text;
+  if (activeTab === 'main') { name = 'main.' + L.ext; text = ycode.toString(); }
+  else { name = activeTab; text = files[activeTab] || ''; }
+  const blob = new Blob([text], { type: mime });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'main.' + L.ext;
+  a.download = name;
   a.click();
   URL.revokeObjectURL(a.href);
 };
